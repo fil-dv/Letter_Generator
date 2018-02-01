@@ -57,6 +57,12 @@ namespace WinFormsFace
             comboBox_regs.Text = "";
         }
 
+        void ClearReadyRegsCombo()
+        {
+            comboBox_ready_regs.Items.Clear();
+            comboBox_ready_regs.Text = "";
+        }
+
         void InitCreditorsCombo()
         {
             comboBox_creditors.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
@@ -104,8 +110,10 @@ namespace WinFormsFace
             LetterManager.ResetData();
             ClearCreditorsCombo();
             ClearRegsCombo();
+            ClearReadyRegsCombo();
             toolStripLabel_pins.Text = "0";
             button_add_reg.Enabled = false;
+            button_remove_reg.Enabled = false;
             InitAdrCombo();
             InitCreditorsCombo();
             InitConditions();            
@@ -137,7 +145,6 @@ namespace WinFormsFace
                 MessageBox.Show("Exception from WinFormsFace.Form_main.InitConditions() " + ex.Message);
             }
         }
-
 
         void CreateHandlers()
         {
@@ -181,6 +188,18 @@ namespace WinFormsFace
             else button_add_reg.Enabled = false;
         }
 
+        void CheckButtonRemoveEnable()
+        {
+            if (comboBox_ready_regs.Items.Count > 0)
+            {
+                button_remove_reg.Enabled = true;
+            }
+            else
+            {
+                button_remove_reg.Enabled = false;
+            }
+        }
+
         private void comboBox_regs_SelectedIndexChanged(object sender, EventArgs e)
         {
             CheckButtonAddEnable();
@@ -191,23 +210,36 @@ namespace WinFormsFace
             CheckButtonAddEnable();
         }
 
-        private void button_add_reg_Click(object sender, EventArgs e)
+        bool CheckIsRegNameCorrect(ref string regName, ref decimal id)
         {
-            decimal id = -1;
-            string str = comboBox_regs.SelectedItem.ToString();
-            string[] arr = str.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            bool isExist = false;
+            
+            string[] arr = regName.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string lastItem = "";
             if (arr.Count() > 0)
             {
                 lastItem = arr[arr.Count() - 1];
                 id = Convert.ToUInt32(lastItem);
-            }
-
+            }           
             if (LetterManager.IsRegExist(id))
             {
+                isExist = true;
+            }
+            return isExist;
+        }
+
+        private void button_add_reg_Click(object sender, EventArgs e)
+        {
+            decimal id = -1;
+            string regName = comboBox_regs.SelectedItem.ToString();
+            if (CheckIsRegNameCorrect(ref regName, ref id))
+            {
                 LetterManager.AddRegForGenerate(id);
-                int countForGenerate = LetterManager.CheckDealsCountToGenerate();
+                int countForGenerate = LetterManager.AddRegToGenerate();
                 toolStripLabel_pins.Text = countForGenerate.ToString();
+                comboBox_ready_regs.Items.Add(regName);
+                comboBox_regs.Items.Remove(regName);
+                comboBox_regs.Text = "";           
             }
         }
 
@@ -231,5 +263,28 @@ namespace WinFormsFace
             
         }
 
+        private void button_in_queue_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Писем в очереди на генерацию: " + LetterManager.GetCountInQueueToGeneration().ToString(), "Letters", MessageBoxButtons.OK);
+        }
+
+        private void comboBox_ready_regs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckButtonRemoveEnable();
+        }
+
+        private void button_remove_reg_Click(object sender, EventArgs e)
+        {
+            string reg = comboBox_ready_regs.SelectedItem.ToString();
+            decimal id = -1;
+            if (CheckIsRegNameCorrect(ref reg, ref id))
+            {
+                comboBox_ready_regs.Items.Remove(reg);
+                int pinCount = LetterManager.RemoveRegFromGenerate(id.ToString());
+                toolStripLabel_pins.Text = pinCount.ToString();
+                comboBox_regs.Items.Add(reg);
+                comboBox_ready_regs.Text = "";
+            }
+        }
     }
 }

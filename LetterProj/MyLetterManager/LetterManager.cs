@@ -239,17 +239,41 @@ namespace MyLetterManager
 
         }
 
-        static public int CheckDealsCountToGenerate()
-        {
-            int count = 0;
+        static public int AddRegToGenerate()
+        {            
             string query = QueryBuilder("select");
             OracleDataReader reader = _con.GetReader(query);
             while (reader.Read())
             {
-                count++;
+                _listDealsToGenerate.Add(new Deal() { DealId = Convert.ToDecimal(reader[0]) });
             }            
             reader.Close();
-            return count;
+            return _listDealsToGenerate.Count;
+        }
+
+        static public int RemoveRegFromGenerate(string regId)
+        {
+            List<Deal> pinToRemove = new List<Deal>();            
+            string query = "select p.business_n from suvd.projects p where p.dogovor_id = " + regId;
+            OracleDataReader reader = _con.GetReader(query);
+            while (reader.Read())
+            {
+                pinToRemove.Add(new Deal() { DealId = Convert.ToDecimal(reader[0]) });
+            }
+            reader.Close();
+
+            //_listDealsToGenerate = _listDealsToGenerate.Except(pinToRemove).ToList();
+             List<Deal> res = pinToRemove.Except(_listDealsToGenerate).ToList();
+            // _listDealsToGenerate = res;
+            //foreach (var item in pinToRemove)
+            //{
+            //    if (_listDealsToGenerate.Exists(x=>x.DealId == item.DealId))
+            //    {
+            //        _listDealsToGenerate.Remove();
+            //    }                
+            //}
+
+            return _listDealsToGenerate.Count;           
         }
 
         static public List<Condition> GetConditionsList()
@@ -278,7 +302,10 @@ namespace MyLetterManager
                 if (item.Id == Convert.ToDecimal(conditionId)) item.IsUsed = isUsed;
             }           
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>Количество дел в очереди на генерацию</returns>
         static public int GetCountInQueueToGeneration()
         {
             int count = -1;
