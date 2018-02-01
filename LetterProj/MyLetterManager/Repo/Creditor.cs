@@ -8,8 +8,9 @@ namespace MyLetterManager.Repo
 {
     public class Creditor
     {
-        string Name { get; set; }
-        string Id { get; set; }
+        public string Name { get; set; }
+        public string Alias { get; set; }
+        public decimal Id { get; set; }
 
         List<Reg> _regList = new List<Reg>();
         public List<Reg> DealList { get { return _regList; } set { _regList = value; } }

@@ -8,8 +8,8 @@ namespace MyLetterManager.Repo
 {
     public class Deal
     {
-        int ProjId { get; set; }
-        int DealId { get; set; }
+        decimal ProjId { get; set; }
+        decimal DealId { get; set; }
         string Dogovor_id { get; set; }
     }
 }
