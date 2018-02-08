@@ -49,7 +49,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repo\Condition.cs" />
     <Compile Include="Repo\Creditor.cs" />
+    <Compile Include="Repo\DataToGenerate.cs" />
     <Compile Include="Repo\Deal.cs" />
+    <Compile Include="Repo\LetterTemplate.cs" />
     <Compile Include="Repo\Reg.cs" />
     <Compile Include="Settings\AppSettings.cs" />
   </ItemGroup>

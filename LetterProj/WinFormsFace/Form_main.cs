@@ -22,7 +22,13 @@ namespace WinFormsFace
             InitializeComponent();
             LetterManager.CreateConnect();
             FillCheckBoxList();
-            ResetControls();            
+            ResetControls();
+            SetTextBoxSumSettings();        
+        }
+
+        private void SetTextBoxSumSettings()
+        {
+            textBox_summa.Location = new Point(220, 193);
         }
 
         void FillCheckBoxList()
@@ -33,7 +39,7 @@ namespace WinFormsFace
                 {
                     CheckBox cb = new CheckBox();
                     cb.Left = 50;
-                    cb.Top = 130 + (i * 24);
+                    cb.Top = 170 + (i * 24);
                     cb.Width = 350;
                     _checkBoxeslist.Add(cb);
                 }
@@ -63,6 +69,12 @@ namespace WinFormsFace
             comboBox_ready_regs.Text = "";
         }
 
+        void ClearTemplateCombo()
+        {
+            comboBox_template.Items.Clear();
+            comboBox_template.Text = "";
+        }
+
         void InitCreditorsCombo()
         {
             comboBox_creditors.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
@@ -72,6 +84,18 @@ namespace WinFormsFace
             {
                 comboBox_creditors.Items.Add(item.Alias.Trim());
             }
+        }
+
+        void InitTemplateCombo()
+        {
+            comboBox_template.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            comboBox_template.AutoCompleteSource = AutoCompleteSource.ListItems;
+            List<LetterTemplate> templateList = LetterManager.GetTemplateList();
+            foreach (var item in templateList)
+            {
+                comboBox_template.Items.Add(item.Id.ToString() /*+ " - "  + item.Name.Trim()*/);
+            }
+            
         }
 
         void InitRegsCombo()
@@ -106,16 +130,19 @@ namespace WinFormsFace
 
         void ResetControls()
         {
-            this.Height = 221 + (LetterManager.GetConditionsList().Count * 24);
+            this.Height = 271 + (LetterManager.GetConditionsList().Count * 24);
             LetterManager.ResetData();
             ClearCreditorsCombo();
             ClearRegsCombo();
+            ClearTemplateCombo();
             ClearReadyRegsCombo();
             toolStripLabel_pins.Text = "0";
+            toolStrip_template.Text = "";
             button_add_reg.Enabled = false;
             button_remove_reg.Enabled = false;
             InitAdrCombo();
             InitCreditorsCombo();
+            InitTemplateCombo();
             InitConditions();            
         }
 
@@ -239,7 +266,8 @@ namespace WinFormsFace
                 toolStripLabel_pins.Text = countForGenerate.ToString();
                 comboBox_ready_regs.Items.Add(regName);
                 comboBox_regs.Items.Remove(regName);
-                comboBox_regs.Text = "";           
+                comboBox_regs.Text = "";
+                button_add_reg.Enabled = false;        
             }
         }
 
@@ -248,20 +276,7 @@ namespace WinFormsFace
             LetterManager.SetAdressType(comboBox_adr.SelectedItem.ToString());
         }
 
-        private void textBox_template_TextChanged(object sender, EventArgs e)
-        {
-            string id = textBox_template.Text;
-            textBox_template.Text = Regex.Replace(id, "[^0-9 ]", "");
-            if (id.Length > 3)
-            {
-                toolStripLabel_template.Text = LetterManager.GetTemplateName(id);
-            }
-            else
-            {
-                toolStripLabel_template.Text = "";
-            }
-            
-        }
+ 
 
         private void button_in_queue_Click(object sender, EventArgs e)
         {
@@ -284,6 +299,44 @@ namespace WinFormsFace
                 toolStripLabel_pins.Text = pinCount.ToString();
                 comboBox_regs.Items.Add(reg);
                 comboBox_ready_regs.Text = "";
+                button_remove_reg.Enabled = false;
+            }
+        }
+
+        private void comboBox_template_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                decimal templateId = Convert.ToDecimal(comboBox_template.Text);
+                string templateName = "";
+                if (LetterManager.IsTemplateExists(templateId, ref templateName))
+                {
+                    LetterManager.SetTemplate(templateId);
+                    toolStrip_template.Text = templateName;
+                }
+                else
+                {
+                    comboBox_template.Text = "";
+                    toolStrip_template.Text = "";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception from WinFormsFace.Form_main.comboBox_template_SelectedIndexChanged " + ex.Message);   
+            }
+        }
+
+        private void button_load_file_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.ShowDialog();
+        }
+
+        private void textBox_summa_TextChanged(object sender, EventArgs e)
+        {
+            if (Regex.IsMatch(textBox_summa.Text, "[^0-9]"))
+            {
+                textBox_summa.Text = textBox_summa.Text.Remove(textBox_summa.Text.Length - 1);
             }
         }
     }

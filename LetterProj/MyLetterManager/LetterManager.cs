@@ -14,9 +14,13 @@ namespace MyLetterManager
     public static class LetterManager
     {
         static OracleConnect _con;
+
+        static DataToGenerate _dataToGenerate = new DataToGenerate(); 
+
         static public List<Creditor> _creditorList = new List<Creditor>();
         static public List<Reg> _creditorRegsList = new List<Reg>();
         static public List<Deal> _dealList = new List<Deal>();
+        static public List<LetterTemplate> _templateList = new List<LetterTemplate>();
         static public List<Reg> _listRegToGenerate = new List<Reg>();
         static public List<Deal> _listDealsToGenerate = new List<Deal>();
         static public List<Condition> _listConditions = new List<Condition>();
@@ -55,7 +59,7 @@ namespace MyLetterManager
             foreach (var item in inputList)
             {
                 item.Alias = item.Name;
-                string str = item.Alias.Replace('«', '"');
+                string str = item.Alias.Replace('«', '"').ToUpper();
                 str = str.Replace('»', '"');
                 str = str.Replace("БАНК", "");
                 item.Name = str;
@@ -98,6 +102,31 @@ namespace MyLetterManager
             }
             GetListWithAliases(ref _creditorList);
             return _creditorList;
+        }
+
+        public static List<LetterTemplate> GetTemplateList()
+        {
+            try
+            {
+                _templateList.Clear();
+
+                string query = "select distinct t.id, t.name from suvd.templates t";
+                OracleDataReader reader = _con.GetReader(query);
+                while (reader.Read())
+                {
+                    LetterTemplate lt = new LetterTemplate();
+                    lt.Id = Convert.ToDecimal(reader[0]);
+                    lt.Name = reader[1].ToString();
+                    _templateList.Add(lt);
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception from MyLetterManager.LetterManager.GetTemplateList(). " + ex.Message);
+            }
+
+            return _templateList;
         }
 
         public static decimal GetCreditorIdByTrimedAlias(string name)
@@ -330,6 +359,23 @@ namespace MyLetterManager
             }
             reader.Close();
             return templateName;
+        }
+
+        static public bool IsTemplateExists(decimal templateId, ref string templateName)
+        {
+            bool isExist = false;
+            List<LetterTemplate> list = _templateList.Where(t => t.Id == templateId).ToList();
+            if (list.Count > 0)
+            {
+                isExist = true;
+                templateName = list[0].Name;
+            }
+            return isExist;
+        }
+
+        static public void SetTemplate(decimal templateId)
+        {
+            _dataToGenerate.TemplateId = templateId;
         }
 
     }

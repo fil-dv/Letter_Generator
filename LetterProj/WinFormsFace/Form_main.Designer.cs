@@ -38,16 +38,16 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripLabel_pins = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripLabel_template = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStrip_template = new System.Windows.Forms.ToolStripStatusLabel();
             this.comboBox_adr = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox_template = new System.Windows.Forms.TextBox();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripLabel_template = new System.Windows.Forms.ToolStripStatusLabel();
             this.button_in_queue = new System.Windows.Forms.Button();
-            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.button1 = new System.Windows.Forms.Button();
             this.comboBox_ready_regs = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -55,6 +55,10 @@
             this.label6 = new System.Windows.Forms.Label();
             this.button_plus = new System.Windows.Forms.Button();
             this.button_menus = new System.Windows.Forms.Button();
+            this.comboBox_template = new System.Windows.Forms.ComboBox();
+            this.textBox_summa = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.button_load_file = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -121,8 +125,9 @@
             this.toolStripLabel_pins,
             this.toolStripStatusLabel2,
             this.toolStripLabel_template,
-            this.toolStripStatusLabel4});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 565);
+            this.toolStripStatusLabel4,
+            this.toolStrip_template});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 665);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(657, 22);
             this.statusStrip1.TabIndex = 4;
@@ -139,6 +144,27 @@
             this.toolStripLabel_pins.Name = "toolStripLabel_pins";
             this.toolStripLabel_pins.Size = new System.Drawing.Size(13, 17);
             this.toolStripLabel_pins.Text = "0";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(76, 17);
+            this.toolStripStatusLabel2.Text = "       Шаблон:";
+            // 
+            // toolStripLabel_template
+            // 
+            this.toolStripLabel_template.Name = "toolStripLabel_template";
+            this.toolStripLabel_template.Size = new System.Drawing.Size(0, 17);
+            // 
+            // toolStripStatusLabel4
+            // 
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(0, 17);
+            // 
+            // toolStrip_template
+            // 
+            this.toolStrip_template.Name = "toolStrip_template";
+            this.toolStrip_template.Size = new System.Drawing.Size(0, 17);
             // 
             // comboBox_adr
             // 
@@ -187,25 +213,6 @@
             this.label4.TabIndex = 9;
             this.label4.Text = "ID шаблона:";
             // 
-            // textBox_template
-            // 
-            this.textBox_template.Location = new System.Drawing.Point(431, 232);
-            this.textBox_template.Name = "textBox_template";
-            this.textBox_template.Size = new System.Drawing.Size(195, 20);
-            this.textBox_template.TabIndex = 10;
-            this.textBox_template.TextChanged += new System.EventHandler(this.textBox_template_TextChanged);
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(76, 17);
-            this.toolStripStatusLabel2.Text = "       Шаблон:";
-            // 
-            // toolStripLabel_template
-            // 
-            this.toolStripLabel_template.Name = "toolStripLabel_template";
-            this.toolStripLabel_template.Size = new System.Drawing.Size(0, 17);
-            // 
             // button_in_queue
             // 
             this.button_in_queue.Location = new System.Drawing.Point(432, 403);
@@ -215,11 +222,6 @@
             this.button_in_queue.Text = "Проверить очередь на генерацию";
             this.button_in_queue.UseVisualStyleBackColor = true;
             this.button_in_queue.Click += new System.EventHandler(this.button_in_queue_Click);
-            // 
-            // toolStripStatusLabel4
-            // 
-            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            this.toolStripStatusLabel4.Size = new System.Drawing.Size(0, 17);
             // 
             // button1
             // 
@@ -286,11 +288,50 @@
             this.button_menus.Text = "-";
             this.button_menus.UseVisualStyleBackColor = true;
             // 
+            // comboBox_template
+            // 
+            this.comboBox_template.FormattingEnabled = true;
+            this.comboBox_template.Location = new System.Drawing.Point(432, 232);
+            this.comboBox_template.Name = "comboBox_template";
+            this.comboBox_template.Size = new System.Drawing.Size(195, 21);
+            this.comboBox_template.TabIndex = 19;
+            this.comboBox_template.SelectedIndexChanged += new System.EventHandler(this.comboBox_template_SelectedIndexChanged);
+            // 
+            // textBox_summa
+            // 
+            this.textBox_summa.Location = new System.Drawing.Point(201, 157);
+            this.textBox_summa.Name = "textBox_summa";
+            this.textBox_summa.Size = new System.Drawing.Size(54, 20);
+            this.textBox_summa.TabIndex = 20;
+            this.textBox_summa.TextChanged += new System.EventHandler(this.textBox_summa_TextChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(20, 114);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(0, 13);
+            this.label7.TabIndex = 21;
+            // 
+            // button_load_file
+            // 
+            this.button_load_file.Location = new System.Drawing.Point(26, 104);
+            this.button_load_file.Name = "button_load_file";
+            this.button_load_file.Size = new System.Drawing.Size(229, 23);
+            this.button_load_file.TabIndex = 22;
+            this.button_load_file.Text = "Загрузить из файла";
+            this.button_load_file.UseVisualStyleBackColor = true;
+            this.button_load_file.Click += new System.EventHandler(this.button_load_file_Click);
+            // 
             // Form_main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(657, 587);
+            this.ClientSize = new System.Drawing.Size(657, 687);
+            this.Controls.Add(this.button_load_file);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.textBox_summa);
+            this.Controls.Add(this.comboBox_template);
             this.Controls.Add(this.button_menus);
             this.Controls.Add(this.button_plus);
             this.Controls.Add(this.label6);
@@ -299,7 +340,6 @@
             this.Controls.Add(this.comboBox_ready_regs);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.button_in_queue);
-            this.Controls.Add(this.textBox_template);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -310,11 +350,13 @@
             this.Controls.Add(this.comboBox_regs);
             this.Controls.Add(this.comboBox_creditors);
             this.Controls.Add(this.menuStrip1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.MaximizeBox = false;
             this.Name = "Form_main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Letters";
+            this.Text = "Письма";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -340,7 +382,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox_template;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripLabel_template;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
@@ -352,6 +393,11 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button_plus;
         private System.Windows.Forms.Button button_menus;
+        private System.Windows.Forms.ComboBox comboBox_template;
+        private System.Windows.Forms.ToolStripStatusLabel toolStrip_template;
+        private System.Windows.Forms.TextBox textBox_summa;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button button_load_file;
     }
 }
 
