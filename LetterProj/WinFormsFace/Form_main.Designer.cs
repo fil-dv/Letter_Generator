@@ -215,7 +215,7 @@
             // 
             // button_in_queue
             // 
-            this.button_in_queue.Location = new System.Drawing.Point(432, 403);
+            this.button_in_queue.Location = new System.Drawing.Point(431, 429);
             this.button_in_queue.Name = "button_in_queue";
             this.button_in_queue.Size = new System.Drawing.Size(195, 23);
             this.button_in_queue.TabIndex = 11;
@@ -226,7 +226,7 @@
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button1.Location = new System.Drawing.Point(432, 441);
+            this.button1.Location = new System.Drawing.Point(431, 467);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(196, 69);
             this.button1.TabIndex = 12;
@@ -264,7 +264,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(462, 292);
+            this.label6.Location = new System.Drawing.Point(461, 318);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(144, 13);
             this.label6.TabIndex = 16;
@@ -272,7 +272,7 @@
             // 
             // button_plus
             // 
-            this.button_plus.Location = new System.Drawing.Point(431, 320);
+            this.button_plus.Location = new System.Drawing.Point(430, 346);
             this.button_plus.Name = "button_plus";
             this.button_plus.Size = new System.Drawing.Size(95, 23);
             this.button_plus.TabIndex = 17;
@@ -281,7 +281,7 @@
             // 
             // button_menus
             // 
-            this.button_menus.Location = new System.Drawing.Point(534, 320);
+            this.button_menus.Location = new System.Drawing.Point(533, 346);
             this.button_menus.Name = "button_menus";
             this.button_menus.Size = new System.Drawing.Size(94, 23);
             this.button_menus.TabIndex = 18;

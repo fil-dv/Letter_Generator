@@ -1,4 +1,5 @@
 ﻿using MyLetterManager;
+using MyLetterManager.Mediator;
 using MyLetterManager.Repo;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinFormsFace.OtherForms;
 
 namespace WinFormsFace
 {
@@ -111,6 +113,18 @@ namespace WinFormsFace
         private void comboBox_creditors_SelectedIndexChanged(object sender, EventArgs e)
         {
             InitRegsCombo();
+           // Mediator.CurrentCreditor = comboBox_creditors.SelectedItem.ToString();
+           // InitRegForm();
+        }
+
+        private void InitRegForm()
+        {
+            Form_regs fr = new Form_regs();
+            fr.FormBorderStyle = FormBorderStyle.FixedDialog;
+            fr.MaximizeBox = false;
+            fr.MinimizeBox = false;
+            fr.StartPosition = FormStartPosition.CenterScreen;
+            fr.ShowDialog();
         }
 
         private void Clean_up_ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -123,9 +137,13 @@ namespace WinFormsFace
             comboBox_adr.Items.Clear();
             comboBox_adr.Items.Add("Прописка");
             comboBox_adr.Items.Add("Фактический");
-            comboBox_adr.Items.Add("Временной регистрации");
+            comboBox_adr.Items.Add("АВР");
+            comboBox_adr.Items.Add("Прописка + Фактический");
+            comboBox_adr.Items.Add("Прописка + АВР");
+            comboBox_adr.Items.Add("Прописка + Фактический + АВР");
+
             comboBox_adr.Items.Add("Рабочий");
-            comboBox_adr.SelectedIndex = 0;
+           // comboBox_adr.SelectedIndex = 0;
         }
 
         void ResetControls()
@@ -262,7 +280,7 @@ namespace WinFormsFace
             if (CheckIsRegNameCorrect(ref regName, ref id))
             {
                 LetterManager.AddRegForGenerate(id);
-                int countForGenerate = LetterManager.AddRegToGenerate();
+                int countForGenerate = LetterManager.GetPinCountToGenerate();
                 toolStripLabel_pins.Text = countForGenerate.ToString();
                 comboBox_ready_regs.Items.Add(regName);
                 comboBox_regs.Items.Remove(regName);
@@ -274,9 +292,7 @@ namespace WinFormsFace
         private void comboBox_adr_SelectedIndexChanged(object sender, EventArgs e)
         {
             LetterManager.SetAdressType(comboBox_adr.SelectedItem.ToString());
-        }
-
- 
+        } 
 
         private void button_in_queue_Click(object sender, EventArgs e)
         {
@@ -295,7 +311,8 @@ namespace WinFormsFace
             if (CheckIsRegNameCorrect(ref reg, ref id))
             {
                 comboBox_ready_regs.Items.Remove(reg);
-                int pinCount = LetterManager.RemoveRegFromGenerate(id.ToString());
+                LetterManager.RemoveRegFromGenerate(id);
+                int pinCount = LetterManager.GetPinCountToGenerate();
                 toolStripLabel_pins.Text = pinCount.ToString();
                 comboBox_regs.Items.Add(reg);
                 comboBox_ready_regs.Text = "";

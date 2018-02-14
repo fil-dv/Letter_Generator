@@ -52,6 +52,7 @@
     <Compile Include="Repo\DataToGenerate.cs" />
     <Compile Include="Repo\Deal.cs" />
     <Compile Include="Repo\LetterTemplate.cs" />
+    <Compile Include="Repo\QueryBuilder.cs" />
     <Compile Include="Repo\Reg.cs" />
     <Compile Include="Settings\AppSettings.cs" />
   </ItemGroup>

@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace MyLetterManager.Mediator
 {
-    public class Mediator
+    public static class Mediator
     {
-        //List<Creditor> CreditorList
+        static string _currentCreditor = "";
+        public static string CurrentCreditor { get { return _currentCreditor; } set { _currentCreditor = value; } } 
+
+        public static string DealsCount { get; set; }
     }
 }

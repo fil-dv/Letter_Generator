@@ -14,17 +14,24 @@ namespace MyLetterManager
     public static class LetterManager
     {
         static OracleConnect _con;
-
-        static DataToGenerate _dataToGenerate = new DataToGenerate(); 
-
+       
         static public List<Creditor> _creditorList = new List<Creditor>();
         static public List<Reg> _creditorRegsList = new List<Reg>();
         static public List<Deal> _dealList = new List<Deal>();
         static public List<LetterTemplate> _templateList = new List<LetterTemplate>();
-        static public List<Reg> _listRegToGenerate = new List<Reg>();
-        static public List<Deal> _listDealsToGenerate = new List<Deal>();
         static public List<Condition> _listConditions = new List<Condition>();
         static public string _adress_type = "";
+
+        static public void ResetData()
+        {
+            _creditorList.Clear();
+            _creditorRegsList.Clear();
+            _dealList.Clear();
+            _templateList.Clear();
+            _listConditions.Clear();
+            DataToGenerate.Reset();
+            _adress_type = "";
+        }
 
         public static void CreateConnect()
         {
@@ -165,17 +172,7 @@ namespace MyLetterManager
                 MessageBox.Show("Exception from MyLetterManager.LetterManager.GetRegListByCreditorId(). " + ex.Message);
             }
             return _creditorRegsList;
-        }
-
-        static public void ResetData()
-        {
-            _creditorList.Clear();
-            _creditorRegsList.Clear();
-            _dealList.Clear();
-            _listRegToGenerate.Clear();
-            _listDealsToGenerate.Clear();
-            _listConditions.Clear();
-        }
+        }        
 
         static public bool IsRegExist(decimal id)
         {
@@ -193,42 +190,16 @@ namespace MyLetterManager
             List<Reg> list = _creditorRegsList.Where(r => r.Id == regId).ToList();
             if (list.Count > 0)
             {
-                _listRegToGenerate.Add(list[0]);
+                DataToGenerate.RegList.Add(list[0]);
             }            
-        }
-
-        static public string QueryBuilder(string command)
-        {
-            string query = "";
-            HeaderScriptBuilder(ref query, command);
-            ConditionsScriptBuilder(ref query);
-            return query;
-        }
-
-        static void HeaderScriptBuilder(ref string query, string command)
-        {
-            switch (command)
-            {
-                case "select":
-                    query = "select p.business_n " +
-                              "from suvd.projects p, suvd.contact_address a, suvd.contacts c " +
-                             "where p.dogovor_id in (" + GetRegStr() + ") " +
-                               "and a.contact_id = p.debtor_contact_id " +
-                               "and c.id = p.debtor_contact_id " +
-                               "and a.role = " + WriteAdressType();
-                    break;
-
-                case "insert":
-                    break;
-            }
-        }
+        }        
 
         static public void SetAdressType(string adrType)
         {
             _adress_type = adrType;
         }
 
-        static string WriteAdressType()
+        public static string WriteAdressType()
         {
             switch (_adress_type)
             {
@@ -249,12 +220,12 @@ namespace MyLetterManager
             }
         }
 
-        static string GetRegStr()
+        public static string GetRegStr()
         {
             string str = "";
-            if (_listRegToGenerate.Count > 0)
+            if (DataToGenerate.RegList.Count > 0)
             {
-                foreach (var item in _listRegToGenerate)
+                foreach (var item in DataToGenerate.RegList)
                 {
                     str += (item.Id.ToString() + ",");
                 }
@@ -268,41 +239,32 @@ namespace MyLetterManager
 
         }
 
-        static public int AddRegToGenerate()
-        {            
-            string query = QueryBuilder("select");
-            OracleDataReader reader = _con.GetReader(query);
-            while (reader.Read())
-            {
-                _listDealsToGenerate.Add(new Deal() { DealId = Convert.ToDecimal(reader[0]) });
-            }            
-            reader.Close();
-            return _listDealsToGenerate.Count;
-        }
-
-        static public int RemoveRegFromGenerate(string regId)
+        static public int GetPinCountToGenerate()
         {
-            List<Deal> pinToRemove = new List<Deal>();            
-            string query = "select p.business_n from suvd.projects p where p.dogovor_id = " + regId;
+            if (DataToGenerate.RegList.Count == 0)
+            {
+                return 0;
+            }
+            string query = "";
+            QueryBuilder.HeaderScriptBuilder(ref query, "select by reg");
             OracleDataReader reader = _con.GetReader(query);
+            List<Deal> listDealsToGenerate = new List<Deal>();
             while (reader.Read())
             {
-                pinToRemove.Add(new Deal() { DealId = Convert.ToDecimal(reader[0]) });
+                listDealsToGenerate.Add(new Deal() { DealId = Convert.ToDecimal(reader[0]) });
             }
             reader.Close();
+            return listDealsToGenerate.Count;
+        }
 
-            //_listDealsToGenerate = _listDealsToGenerate.Except(pinToRemove).ToList();
-             List<Deal> res = pinToRemove.Except(_listDealsToGenerate).ToList();
-            // _listDealsToGenerate = res;
-            //foreach (var item in pinToRemove)
-            //{
-            //    if (_listDealsToGenerate.Exists(x=>x.DealId == item.DealId))
-            //    {
-            //        _listDealsToGenerate.Remove();
-            //    }                
-            //}
 
-            return _listDealsToGenerate.Count;           
+        static public void RemoveRegFromGenerate(decimal regId)
+        {
+            List<Reg> list = _creditorRegsList.Where(r => r.Id == regId).ToList();
+            if (list.Count > 0)
+            {
+                DataToGenerate.RegList.Remove(list[0]);
+            }     
         }
 
         static public List<Condition> GetConditionsList()
@@ -375,8 +337,10 @@ namespace MyLetterManager
 
         static public void SetTemplate(decimal templateId)
         {
-            _dataToGenerate.TemplateId = templateId;
+            DataToGenerate.TemplateId = templateId;
         }
+
+        
 
     }
 }
