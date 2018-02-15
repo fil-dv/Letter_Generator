@@ -241,20 +241,26 @@ namespace MyLetterManager
 
         static public int GetPinCountToGenerate()
         {
-            if (DataToGenerate.RegList.Count == 0)
+            int countByReg = 0;
+            int countByPin = DataToGenerate.DealList.Count;
+            if (DataToGenerate.RegList.Count == 0 && countByPin == 0)
             {
                 return 0;
             }
-            string query = "";
-            QueryBuilder.HeaderScriptBuilder(ref query, "select by reg");
-            OracleDataReader reader = _con.GetReader(query);
-            List<Deal> listDealsToGenerate = new List<Deal>();
-            while (reader.Read())
+            if (DataToGenerate.RegList.Count > 0)
             {
-                listDealsToGenerate.Add(new Deal() { DealId = Convert.ToDecimal(reader[0]) });
+                string query = "";
+                QueryBuilder.HeaderScriptBuilder(ref query, "select by reg");
+                OracleDataReader reader = _con.GetReader(query);
+                List<Deal> listDealsToGenerate = new List<Deal>();
+                while (reader.Read())
+                {
+                    listDealsToGenerate.Add(new Deal() { DealId = Convert.ToDecimal(reader[0]) });
+                }
+                reader.Close();
+                countByReg = listDealsToGenerate.Count;                
             }
-            reader.Close();
-            return listDealsToGenerate.Count;
+            return (countByReg + countByPin);
         }
 
 
@@ -340,7 +346,20 @@ namespace MyLetterManager
             DataToGenerate.TemplateId = templateId;
         }
 
-        
+        static public void AddPinFromFile(List<string> strList)
+        {
+            foreach (var item in strList)
+            {
+                Deal deal = new Deal();
+                deal.DealId = Convert.ToDecimal(item);
+                DataToGenerate.DealList.Add(deal);
+            }
+        }
+
+        static public void RemovePinsLoadedFromFile()
+        {
+            DataToGenerate.DealList.Clear();
+        }
 
     }
 }

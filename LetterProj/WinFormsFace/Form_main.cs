@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -280,13 +281,18 @@ namespace WinFormsFace
             if (CheckIsRegNameCorrect(ref regName, ref id))
             {
                 LetterManager.AddRegForGenerate(id);
-                int countForGenerate = LetterManager.GetPinCountToGenerate();
-                toolStripLabel_pins.Text = countForGenerate.ToString();
+                RefreshToolStripPin();
                 comboBox_ready_regs.Items.Add(regName);
                 comboBox_regs.Items.Remove(regName);
                 comboBox_regs.Text = "";
                 button_add_reg.Enabled = false;        
             }
+        }
+
+        void RefreshToolStripPin()
+        {
+            int countForGenerate = LetterManager.GetPinCountToGenerate();
+            toolStripLabel_pins.Text = countForGenerate.ToString();
         }
 
         private void comboBox_adr_SelectedIndexChanged(object sender, EventArgs e)
@@ -312,8 +318,7 @@ namespace WinFormsFace
             {
                 comboBox_ready_regs.Items.Remove(reg);
                 LetterManager.RemoveRegFromGenerate(id);
-                int pinCount = LetterManager.GetPinCountToGenerate();
-                toolStripLabel_pins.Text = pinCount.ToString();
+                RefreshToolStripPin();
                 comboBox_regs.Items.Add(reg);
                 comboBox_ready_regs.Text = "";
                 button_remove_reg.Enabled = false;
@@ -345,9 +350,48 @@ namespace WinFormsFace
 
         private void button_load_file_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.ShowDialog();
+            if (button_load_file.Text.Trim() == "Загрузить из файла")
+            {
+                Stream myStream = null;
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Title = "Open Text File";
+                ofd.Filter = "TXT files|*.txt";
+                ofd.InitialDirectory = @"C:\";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        if ((myStream = ofd.OpenFile()) != null)
+                        {
+                            List<string> strList = new List<string>();
+                            using (myStream)
+                            {
+                                var lines = File.ReadLines(ofd.FileName);
+                                foreach (var line in lines)
+                                {
+                                    strList.Add(line);
+                                }
+                            }
+                            LetterManager.AddPinFromFile(strList);
+                            RefreshToolStripPin();
+                            button_load_file.Text = "Удалить загруженные из файла";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Не удается прочитать файл. " + ex.Message);
+                    }
+                }               
+            }
+            else
+            {
+                LetterManager.RemovePinsLoadedFromFile();
+                RefreshToolStripPin();
+                button_load_file.Text = "Загрузить из файла";
+            }
         }
+
+
 
         private void textBox_summa_TextChanged(object sender, EventArgs e)
         {
