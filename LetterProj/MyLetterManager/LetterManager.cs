@@ -4,6 +4,7 @@ using Oracle.ManagedDataAccess.Client;
 using Semaphore.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,20 +18,20 @@ namespace MyLetterManager
        
         static public List<Creditor> _creditorList = new List<Creditor>();
         static public List<Reg> _creditorRegsList = new List<Reg>();
-        static public List<Deal> _dealList = new List<Deal>();
+     //   static public List<Deal> _dealList = new List<Deal>();
         static public List<LetterTemplate> _templateList = new List<LetterTemplate>();
         static public List<Condition> _listConditions = new List<Condition>();
-        static public string _adress_type = "";
+      //  static public string _adress_type = "";
 
         static public void ResetData()
         {
             _creditorList.Clear();
             _creditorRegsList.Clear();
-            _dealList.Clear();
+         //   _dealList.Clear();
             _templateList.Clear();
             _listConditions.Clear();
             DataToGenerate.Reset();
-            _adress_type = "";
+           // _adress_type = "";
         }
 
         public static void CreateConnect()
@@ -194,73 +195,78 @@ namespace MyLetterManager
             }            
         }        
 
-        static public void SetAdressType(string adrType)
-        {
-            _adress_type = adrType;
-        }
+        //static public void SetAdressType(string adrType)
+        //{
+        //    _adress_type = adrType;
+        //}
 
-        public static string WriteAdressType()
-        {
-            switch (_adress_type)
-            {
-                case "Прописка":
-                    return "1";
-                    break;
-                case "Фактический":
-                    return "3";
-                    break;
-                case "Временной регистрации":
-                    return "2";
-                    break;
-                case "Рабочий":
-                    return "4";
-                    break;
-                default:
-                    return "1";                   
-            }
-        }
+        //public static string WriteAdressType()
+        //{
+        //    switch (_adress_type)
+        //    {
+        //        case "Прописка":
+        //            return "1";
+        //            break;
+        //        case "Фактический":
+        //            return "3";
+        //            break;
+        //        case "Временной регистрации":
+        //            return "2";
+        //            break;
+        //        case "Рабочий":
+        //            return "4";
+        //            break;
+        //        default:
+        //            return "1";                   
+        //    }
+        //}
 
-        public static string GetRegStr()
-        {
-            string str = "";
-            if (DataToGenerate.RegList.Count > 0)
-            {
-                foreach (var item in DataToGenerate.RegList)
-                {
-                    str += (item.Id.ToString() + ",");
-                }
-                str = str.Remove(str.Count() -1, 1);
-            }
-            return str;
-        }
+        //public static string GetRegStr()
+        //{
+        //    string str = "";
+        //    if (DataToGenerate.RegList.Count > 0)
+        //    {
+        //        foreach (var item in DataToGenerate.RegList)
+        //        {
+        //            str += (item.Id.ToString() + ",");
+        //        }
+        //        str = str.Remove(str.Count() -1, 1);
+        //    }
+        //    return str;
+        //}
 
-        static void ConditionsScriptBuilder(ref string query)
-        {
+        //public static string GetPinStr()
+        //{
+        //    string str = "";
+        //    if (DataToGenerate.DealList.Count > 0)
+        //    {
+        //        foreach (var item in DataToGenerate.DealList)
+        //        {
+        //            str += (item.DealId.ToString() + ",");
+        //        }
+        //        str = str.Remove(str.Count() - 1, 1);
+        //    }
+        //    return str;
+        //}
 
-        }
+
 
         static public int GetPinCountToGenerate()
         {
-            int countByReg = 0;
-            int countByPin = DataToGenerate.DealList.Count;
-            if (DataToGenerate.RegList.Count == 0 && countByPin == 0)
+            int count = 0;
+            //if (DataToGenerate.RegList.Count == 0 && DataToGenerate.DealList.Count == 0)
+            //{
+            //    return 0;
+            //}
+            string query = "select count(*) from LET_APP";
+            //QueryBuilder.ScriptBuilder(_con, ref query, "check_count");
+            OracleDataReader reader = _con.GetReader(query);
+            while (reader.Read())
             {
-                return 0;
+                count = Convert.ToInt32(reader[0]);
             }
-            if (DataToGenerate.RegList.Count > 0)
-            {
-                string query = "";
-                QueryBuilder.HeaderScriptBuilder(ref query, "select by reg");
-                OracleDataReader reader = _con.GetReader(query);
-                List<Deal> listDealsToGenerate = new List<Deal>();
-                while (reader.Read())
-                {
-                    listDealsToGenerate.Add(new Deal() { DealId = Convert.ToDecimal(reader[0]) });
-                }
-                reader.Close();
-                countByReg = listDealsToGenerate.Count;                
-            }
-            return (countByReg + countByPin);
+            reader.Close();
+            return count;
         }
 
 
@@ -341,23 +347,61 @@ namespace MyLetterManager
             return isExist;
         }
 
-        static public void SetTemplate(decimal templateId)
+        //static public void SetTemplate(decimal templateId)
+        //{
+        //    DataToGenerate.TemplateId = templateId;
+        //}
+
+        
+
+        static public void AddPinFromFile(List<RecordToInsert> insertList)
         {
-            DataToGenerate.TemplateId = templateId;
+           // DataToGenerate.DealList.Clear();
+
+            using (FileStream fs = new FileStream("Imp.csv", FileMode.Create))
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                foreach (var item in insertList)
+                {
+                    string query = "";
+                    switch (item.AdrType)
+                    {
+                        case AdressType.ap:
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";1" );
+                            query = "insert into LET_APP (deal_id, template, adr_type) values(" + item.DealId + ", " + item.TemplateId + ", " + 1 + ")";
+                            break;
+                        case AdressType.af:
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";3");
+                            query = "insert into LET_APP (deal_id, template, adr_type) values(" + item.DealId + ", " + item.TemplateId + ", " + 3 + ")";
+                            break;
+                        case AdressType.avr:
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";2");
+                            query = "insert into LET_APP (deal_id, template, adr_type) values(" + item.DealId + ", " + item.TemplateId + ", " + 2 + ")";
+                            break;
+                        case AdressType.work:
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";4");
+                            query = "insert into LET_APP (deal_id, template, adr_type) values(" + item.DealId + ", " + item.TemplateId + ", " + 4 + ")";
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                    // ExecCommand(query);
+                    //Deal deal = new Deal();
+                    //deal.DealId = Convert.ToDecimal(item.DealId);
+                    //DataToGenerate.DealList.Add(deal);
+                }
+            }            
+            System.Diagnostics.Process.Start("1_IMPORT.BAT");
         }
 
-        static public void AddPinFromFile(List<string> strList)
-        {
-            foreach (var item in strList)
-            {
-                Deal deal = new Deal();
-                deal.DealId = Convert.ToDecimal(item);
-                DataToGenerate.DealList.Add(deal);
-            }
-        }
 
         static public void RemovePinsLoadedFromFile()
         {
+            foreach (var item in DataToGenerate.DealList)
+            {
+                string query = "delete from LET_APP t where t.deal_id = " + item.DealId.ToString();
+                ExecCommand(query);
+            }
             DataToGenerate.DealList.Clear();
         }
 

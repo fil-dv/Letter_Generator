@@ -142,7 +142,7 @@ namespace WinFormsFace
             comboBox_adr.Items.Add("Прописка + Фактический");
             comboBox_adr.Items.Add("Прописка + АВР");
             comboBox_adr.Items.Add("Прописка + Фактический + АВР");
-
+            
             comboBox_adr.Items.Add("Рабочий");
            // comboBox_adr.SelectedIndex = 0;
         }
@@ -157,6 +157,7 @@ namespace WinFormsFace
             ClearReadyRegsCombo();
             toolStripLabel_pins.Text = "0";
             toolStrip_template.Text = "";
+            button_load_file.Text = "Загрузить из файла";
             button_add_reg.Enabled = false;
             button_remove_reg.Enabled = false;
             InitAdrCombo();
@@ -297,7 +298,7 @@ namespace WinFormsFace
 
         private void comboBox_adr_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LetterManager.SetAdressType(comboBox_adr.SelectedItem.ToString());
+           // LetterManager.SetAdressType(comboBox_adr.SelectedItem.ToString());
         } 
 
         private void button_in_queue_Click(object sender, EventArgs e)
@@ -333,7 +334,7 @@ namespace WinFormsFace
                 string templateName = "";
                 if (LetterManager.IsTemplateExists(templateId, ref templateName))
                 {
-                    LetterManager.SetTemplate(templateId);
+                    //LetterManager.SetTemplate(templateId);
                     toolStrip_template.Text = templateName;
                 }
                 else
@@ -363,17 +364,37 @@ namespace WinFormsFace
                     {
                         if ((myStream = ofd.OpenFile()) != null)
                         {
-                            List<string> strList = new List<string>();
+                            if (!CheckReadyToLoadData())
+                            {
+                                MessageBox.Show("Не указан тип адреса или шаблон письма.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                            string template = comboBox_template.SelectedItem.ToString();
+                            AdressType adrtype = (AdressType)comboBox_adr.SelectedIndex; 
+                            List<RecordToInsert> recList = new List<RecordToInsert>();
+
                             using (myStream)
                             {
                                 var lines = File.ReadLines(ofd.FileName);
                                 foreach (var line in lines)
                                 {
-                                    strList.Add(line);
+                                    RecordToInsert rec = new RecordToInsert { DealId = line, TemplateId = template, AdrType = adrtype};
+                                    recList.Add(rec);
                                 }
                             }
-                            LetterManager.AddPinFromFile(strList);
+                            if (InvokeRequired)
+                            {
+                                this.Invoke(new Action(() =>
+                                {
+                                    LetterManager.AddPinFromFile(recList);
+                                }));
+                            }
+                            else
+                            {
+                                LetterManager.AddPinFromFile(recList);
+                            }
+                            //LetterManager.AddPinFromFile(recList);
                             RefreshToolStripPin();
+
                             button_load_file.Text = "Удалить загруженные из файла";
                         }
                     }
@@ -391,7 +412,17 @@ namespace WinFormsFace
             }
         }
 
-
+        private bool CheckReadyToLoadData()
+        {
+            if (comboBox_adr.Text.Length < 1 || comboBox_template.Text.Length < 1)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
 
         private void textBox_summa_TextChanged(object sender, EventArgs e)
         {
