@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinFormsFace.OtherForms;
@@ -22,11 +24,17 @@ namespace WinFormsFace
 
         public Form_main()
         {
+            InitHendlers();
             InitializeComponent();
             LetterManager.CreateConnect();
             FillCheckBoxList();
             ResetControls();
             SetTextBoxSumSettings();        
+        }
+
+        private void InitHendlers()
+        {
+            LetterManager.FileLoadCompleted += LetterManager_FileLoadCompleted;
         }
 
         private void SetTextBoxSumSettings()
@@ -351,8 +359,8 @@ namespace WinFormsFace
 
         private void button_load_file_Click(object sender, EventArgs e)
         {
-            if (button_load_file.Text.Trim() == "Загрузить из файла")
-            {
+           // if (button_load_file.Text.Trim() == "Загрузить из файла")
+           // {
                 Stream myStream = null;
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Title = "Open Text File";
@@ -381,21 +389,28 @@ namespace WinFormsFace
                                     recList.Add(rec);
                                 }
                             }
-                            if (InvokeRequired)
-                            {
-                                this.Invoke(new Action(() =>
-                                {
-                                    LetterManager.AddPinFromFile(recList);
-                                }));
-                            }
-                            else
-                            {
-                                LetterManager.AddPinFromFile(recList);
-                            }
-                            //LetterManager.AddPinFromFile(recList);
-                            RefreshToolStripPin();
+                        LetterManager.AddPinFromFile(recList);
+                        // Thread thread = 
+                        //new Thread(()=> { LetterManager.AddPinFromFile(recList); });
 
-                            button_load_file.Text = "Удалить загруженные из файла";
+
+                        //if (InvokeRequired)
+                        //{
+                        //    this.Invoke(new Action(() =>
+                        //    {
+                        //        LetterManager.AddPinFromFile(recList);
+                        //    }));
+                        //}
+                        //else
+                        //{
+                        //    LetterManager.AddPinFromFile(recList);
+                        //}
+                        //LetterManager.AddPinFromFile(recList);
+
+
+
+
+                      //  button_load_file.Text = "Удалить загруженные из файла";
                         }
                     }
                     catch (Exception ex)
@@ -403,13 +418,18 @@ namespace WinFormsFace
                         MessageBox.Show("Не удается прочитать файл. " + ex.Message);
                     }
                 }               
-            }
-            else
-            {
-                LetterManager.RemovePinsLoadedFromFile();
-                RefreshToolStripPin();
-                button_load_file.Text = "Загрузить из файла";
-            }
+            //}
+            //else
+            //{
+            //    LetterManager.RemovePinsLoadedFromFile();
+            //    RefreshToolStripPin();
+            //    button_load_file.Text = "Загрузить из файла";
+            //}
+        }
+
+        private void LetterManager_FileLoadCompleted(bool obj)
+        {
+            RefreshToolStripPin();
         }
 
         private bool CheckReadyToLoadData()

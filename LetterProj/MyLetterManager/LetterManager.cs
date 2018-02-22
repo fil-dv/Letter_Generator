@@ -4,6 +4,7 @@ using Oracle.ManagedDataAccess.Client;
 using Semaphore.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -254,12 +255,7 @@ namespace MyLetterManager
         static public int GetPinCountToGenerate()
         {
             int count = 0;
-            //if (DataToGenerate.RegList.Count == 0 && DataToGenerate.DealList.Count == 0)
-            //{
-            //    return 0;
-            //}
             string query = "select count(*) from LET_APP";
-            //QueryBuilder.ScriptBuilder(_con, ref query, "check_count");
             OracleDataReader reader = _con.GetReader(query);
             while (reader.Read())
             {
@@ -347,63 +343,81 @@ namespace MyLetterManager
             return isExist;
         }
 
-        //static public void SetTemplate(decimal templateId)
-        //{
-        //    DataToGenerate.TemplateId = templateId;
-        //}
-
-        
-
-        static public void AddPinFromFile(List<RecordToInsert> insertList)
+         static public void AddPinFromFile(List<RecordToInsert> insertList)
         {
-           // DataToGenerate.DealList.Clear();
-
             using (FileStream fs = new FileStream("Imp.csv", FileMode.Create))
             using (StreamWriter sw = new StreamWriter(fs))
             {
                 foreach (var item in insertList)
                 {
-                    string query = "";
                     switch (item.AdrType)
                     {
                         case AdressType.ap:
                             sw.WriteLine(item.DealId + ";" + item.TemplateId + ";1" );
-                            query = "insert into LET_APP (deal_id, template, adr_type) values(" + item.DealId + ", " + item.TemplateId + ", " + 1 + ")";
                             break;
                         case AdressType.af:
                             sw.WriteLine(item.DealId + ";" + item.TemplateId + ";3");
-                            query = "insert into LET_APP (deal_id, template, adr_type) values(" + item.DealId + ", " + item.TemplateId + ", " + 3 + ")";
                             break;
                         case AdressType.avr:
                             sw.WriteLine(item.DealId + ";" + item.TemplateId + ";2");
-                            query = "insert into LET_APP (deal_id, template, adr_type) values(" + item.DealId + ", " + item.TemplateId + ", " + 2 + ")";
                             break;
                         case AdressType.work:
                             sw.WriteLine(item.DealId + ";" + item.TemplateId + ";4");
-                            query = "insert into LET_APP (deal_id, template, adr_type) values(" + item.DealId + ", " + item.TemplateId + ", " + 4 + ")";
+                            break;
+                        case AdressType.p_f:
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";1");
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";3");
+                            break;
+                        case AdressType.p_avr:
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";1");
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";2");
+                            break;
+                        case AdressType.p_f_avr:
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";1");
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";2");
+                            sw.WriteLine(item.DealId + ";" + item.TemplateId + ";3");
                             break;
                         default:
-                            throw new NotImplementedException();
+                            MessageBox.Show("Некорректный тип адреса.");
+                            break;
                     }
-                    // ExecCommand(query);
-                    //Deal deal = new Deal();
-                    //deal.DealId = Convert.ToDecimal(item.DealId);
-                    //DataToGenerate.DealList.Add(deal);
                 }
-            }            
-            System.Diagnostics.Process.Start("1_IMPORT.BAT");
-        }
-
-
-        static public void RemovePinsLoadedFromFile()
-        {
-            foreach (var item in DataToGenerate.DealList)
-            {
-                string query = "delete from LET_APP t where t.deal_id = " + item.DealId.ToString();
-                ExecCommand(query);
             }
-            DataToGenerate.DealList.Clear();
+
+            Process proc = new Process();
+            proc.Exited += new EventHandler(proc_Exited);
+            proc.StartInfo.CreateNoWindow = true;
+            proc.StartInfo.FileName = @"1_IMPORT.BAT";            
+            proc.EnableRaisingEvents = true;
+            proc.Start();            
         }
+
+        static void proc_Exited(object sender, EventArgs e)
+        {
+            UpdateAddAdress();
+
+            if (FileLoadCompleted != null)
+            {
+                FileLoadCompleted(true);
+            }
+        }
+
+        private static void UpdateAddAdress()
+        {
+            string query = "UPDATE LET_APP t " +
+                              "SET t.adr = " +
+                          "(SELECT ca.zip_code || ', ' || ca.region || ', ' || ca.city || ', ' || ca.street " +
+                             "FROM SUVD.PROJECTS p, suvd.contact_address ca " +
+                            "WHERE t.deal_id = p.business_n " +
+                              "AND t.adr_type = ca.role " +
+                              "AND p.debtor_contact_id = ca.contact_id)";// +
+                                     //  "AND ca.zip_code IS NOT NULL)";
+            _con.ExecCommand(query);
+            //query = "DELETE FROM LET_APP t WHERE t.adr IS NULL";
+            //_con.ExecCommand(query);
+        }
+
+        static public event Action<bool> FileLoadCompleted;
 
     }
 }
