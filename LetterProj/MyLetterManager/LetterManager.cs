@@ -13,6 +13,8 @@ using System.Windows.Forms;
 
 namespace MyLetterManager
 {
+
+
     public static class LetterManager
     {
         static OracleConnect _con;
@@ -32,7 +34,14 @@ namespace MyLetterManager
             _templateList.Clear();
             _listConditions.Clear();
             DataToGenerate.Reset();
-           // _adress_type = "";
+            // _adress_type = "";
+            TruncateTable();
+        }
+
+        private static void TruncateTable()
+        {
+            string query = "truncate table let_app";
+            _con.ExecCommand(query);
         }
 
         public static void CreateConnect()
@@ -187,14 +196,70 @@ namespace MyLetterManager
             return isExist;
         }
 
-        static public void AddRegForGenerate(decimal regId)
+
+
+        #region Add or remove pins by reg numbers
+
+        static public void ChangeRegForGenerate(RecordToInsert record, Operation operation)
         {
-            List<Reg> list = _creditorRegsList.Where(r => r.Id == regId).ToList();
+            List<Reg> list = _creditorRegsList.Where(r => r.Id == record.Reestr.Id).ToList();
             if (list.Count > 0)
             {
-                DataToGenerate.RegList.Add(list[0]);
-            }            
-        }        
+                if (operation == Operation.Insert)
+                {
+                    DataToGenerate.RegList.Add(list[0]);
+                    WritePinsToFile(record);
+                }
+                else
+                {
+                    DataToGenerate.RegList.Remove(list[0]);
+                }
+                WritePinsToFile(record);
+            }
+            else
+            {
+                MessageBox.Show("Некорректный номер реестра.");
+            }                   
+        }
+
+        private static void WritePinsToFile(RecordToInsert record)
+        {
+            string query = "SELECT t.business_n FROM SUVD.PROJECTS t WHERE t.dogovor_id in ( " + GetRegsStr() + ")";
+            OracleDataReader reader = _con.GetReader(query);
+            File.WriteAllText("Imp.csv", String.Empty);
+            while (reader.Read())
+            {
+                File.AppendAllText("Imp.csv", reader[0].ToString());                
+            }
+            reader.Close();
+            InsertToDbByBatFile();
+        }
+
+        private static void DbInsertOrRemove()
+        {
+            TruncateTable();
+
+
+            //string query = 
+        }
+
+        public static string GetRegsStr()
+        {
+            string str = "";
+            if (DataToGenerate.RegList.Count > 0)
+            {
+                foreach (var item in DataToGenerate.RegList)
+                {
+                    str += (item.Id.ToString() + ",");
+                }
+                str = str.Remove(str.Count() - 1, 1);
+            }
+            return str;
+        }
+        #endregion
+
+
+
 
         //static public void SetAdressType(string adrType)
         //{
@@ -222,19 +287,7 @@ namespace MyLetterManager
         //    }
         //}
 
-        //public static string GetRegStr()
-        //{
-        //    string str = "";
-        //    if (DataToGenerate.RegList.Count > 0)
-        //    {
-        //        foreach (var item in DataToGenerate.RegList)
-        //        {
-        //            str += (item.Id.ToString() + ",");
-        //        }
-        //        str = str.Remove(str.Count() -1, 1);
-        //    }
-        //    return str;
-        //}
+
 
         //public static string GetPinStr()
         //{
@@ -266,14 +319,7 @@ namespace MyLetterManager
         }
 
 
-        static public void RemoveRegFromGenerate(decimal regId)
-        {
-            List<Reg> list = _creditorRegsList.Where(r => r.Id == regId).ToList();
-            if (list.Count > 0)
-            {
-                DataToGenerate.RegList.Remove(list[0]);
-            }     
-        }
+
 
         static public List<Condition> GetConditionsList()
         {
@@ -383,16 +429,20 @@ namespace MyLetterManager
                     }
                 }
             }
-
-            Process proc = new Process();
-            proc.Exited += new EventHandler(proc_Exited);
-            proc.StartInfo.CreateNoWindow = true;
-            proc.StartInfo.FileName = @"1_IMPORT.BAT";            
-            proc.EnableRaisingEvents = true;
-            proc.Start();            
+            InsertToDbByBatFile();                       
         }
 
-        static void proc_Exited(object sender, EventArgs e)
+        private static void InsertToDbByBatFile()
+        {
+            Process proc = new Process();
+            proc.Exited += new EventHandler(FileLoaded);
+            proc.StartInfo.CreateNoWindow = true;
+            proc.StartInfo.FileName = @"1_IMPORT.BAT";
+            proc.EnableRaisingEvents = true;
+            proc.Start();
+        }
+
+        static void FileLoaded(object sender, EventArgs e)
         {
             UpdateAddAdress();
 
@@ -401,6 +451,13 @@ namespace MyLetterManager
                 FileLoadCompleted(true);
             }
         }
+
+        //static string GetScriptByAlias()
+        //{
+        //    string script = "";
+
+        //    return script;
+        //}
 
         private static void UpdateAddAdress()
         {

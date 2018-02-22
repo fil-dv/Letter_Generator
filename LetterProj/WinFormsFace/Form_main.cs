@@ -289,7 +289,17 @@ namespace WinFormsFace
             string regName = comboBox_regs.SelectedItem.ToString();
             if (CheckIsRegNameCorrect(ref regName, ref id))
             {
-                LetterManager.AddRegForGenerate(id);
+                if (!CheckReadyToLoadData())
+                {
+                    MessageBox.Show("Не указан тип адреса или шаблон письма.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                string template = comboBox_template.SelectedItem.ToString();
+                AdressType adrtype = (AdressType)comboBox_adr.SelectedIndex;
+                RecordToInsert recList = new RecordToInsert();
+                recList.Reestr.Id = id;
+                recList.AdrType = adrtype;
+                recList.TemplateId = template;
+                LetterManager.ChangeRegForGenerate(recList, Operation.Insert);
                 RefreshToolStripPin();
                 comboBox_ready_regs.Items.Add(regName);
                 comboBox_regs.Items.Remove(regName);
@@ -326,7 +336,9 @@ namespace WinFormsFace
             if (CheckIsRegNameCorrect(ref reg, ref id))
             {
                 comboBox_ready_regs.Items.Remove(reg);
-                LetterManager.RemoveRegFromGenerate(id);
+                RecordToInsert rec = new RecordToInsert();
+                rec.Reestr.Id = id;
+                LetterManager.ChangeRegForGenerate(rec, Operation.Remove);
                 RefreshToolStripPin();
                 comboBox_regs.Items.Add(reg);
                 comboBox_ready_regs.Text = "";
@@ -342,7 +354,6 @@ namespace WinFormsFace
                 string templateName = "";
                 if (LetterManager.IsTemplateExists(templateId, ref templateName))
                 {
-                    //LetterManager.SetTemplate(templateId);
                     toolStrip_template.Text = templateName;
                 }
                 else
@@ -359,72 +370,42 @@ namespace WinFormsFace
 
         private void button_load_file_Click(object sender, EventArgs e)
         {
-           // if (button_load_file.Text.Trim() == "Загрузить из файла")
-           // {
-                Stream myStream = null;
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.Title = "Open Text File";
-                ofd.Filter = "TXT files|*.txt";
-                ofd.InitialDirectory = @"C:\";
-                if (ofd.ShowDialog() == DialogResult.OK)
+            Stream myStream = null;
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Open Text File";
+            ofd.Filter = "TXT files|*.txt";
+            ofd.InitialDirectory = @"C:\";
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                try
                 {
-                    try
+                    if ((myStream = ofd.OpenFile()) != null)
                     {
-                        if ((myStream = ofd.OpenFile()) != null)
+                        if (!CheckReadyToLoadData())
                         {
-                            if (!CheckReadyToLoadData())
-                            {
-                                MessageBox.Show("Не указан тип адреса или шаблон письма.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            }
-                            string template = comboBox_template.SelectedItem.ToString();
-                            AdressType adrtype = (AdressType)comboBox_adr.SelectedIndex; 
-                            List<RecordToInsert> recList = new List<RecordToInsert>();
-
-                            using (myStream)
-                            {
-                                var lines = File.ReadLines(ofd.FileName);
-                                foreach (var line in lines)
-                                {
-                                    RecordToInsert rec = new RecordToInsert { DealId = line, TemplateId = template, AdrType = adrtype};
-                                    recList.Add(rec);
-                                }
-                            }
-                        LetterManager.AddPinFromFile(recList);
-                        // Thread thread = 
-                        //new Thread(()=> { LetterManager.AddPinFromFile(recList); });
-
-
-                        //if (InvokeRequired)
-                        //{
-                        //    this.Invoke(new Action(() =>
-                        //    {
-                        //        LetterManager.AddPinFromFile(recList);
-                        //    }));
-                        //}
-                        //else
-                        //{
-                        //    LetterManager.AddPinFromFile(recList);
-                        //}
-                        //LetterManager.AddPinFromFile(recList);
-
-
-
-
-                      //  button_load_file.Text = "Удалить загруженные из файла";
+                            MessageBox.Show("Не указан тип адреса или шаблон письма.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
+                        string template = comboBox_template.SelectedItem.ToString();
+                        AdressType adrtype = (AdressType)comboBox_adr.SelectedIndex; 
+                        List<RecordToInsert> recList = new List<RecordToInsert>();
+
+                        using (myStream)
+                        {
+                            var lines = File.ReadLines(ofd.FileName);
+                            foreach (var line in lines)
+                            {
+                                RecordToInsert rec = new RecordToInsert { DealId = line, TemplateId = template, AdrType = adrtype};
+                                recList.Add(rec);
+                            }
+                        }
+                        LetterManager.AddPinFromFile(recList);
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Не удается прочитать файл. " + ex.Message);
-                    }
-                }               
-            //}
-            //else
-            //{
-            //    LetterManager.RemovePinsLoadedFromFile();
-            //    RefreshToolStripPin();
-            //    button_load_file.Text = "Загрузить из файла";
-            //}
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Не удается прочитать файл. " + ex.Message);
+                }
+            }               
         }
 
         private void LetterManager_FileLoadCompleted(bool obj)

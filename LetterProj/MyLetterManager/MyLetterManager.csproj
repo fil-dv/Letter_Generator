@@ -47,14 +47,14 @@
     <Compile Include="LetterManager.cs" />
     <Compile Include="Mediator\Mediator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repo\Condition.cs" />
-    <Compile Include="Repo\Creditor.cs" />
-    <Compile Include="Repo\DataToGenerate.cs" />
-    <Compile Include="Repo\Deal.cs" />
-    <Compile Include="Repo\LetterTemplate.cs" />
-    <Compile Include="Repo\QueryBuilder.cs" />
-    <Compile Include="Repo\RecordToInsert.cs" />
-    <Compile Include="Repo\Reg.cs" />
+    <Compile Include="Infrastructure\Condition.cs" />
+    <Compile Include="Infrastructure\Creditor.cs" />
+    <Compile Include="Infrastructure\DataToGenerate.cs" />
+    <Compile Include="Infrastructure\Deal.cs" />
+    <Compile Include="Infrastructure\LetterTemplate.cs" />
+    <Compile Include="Infrastructure\QueryBuilder.cs" />
+    <Compile Include="Infrastructure\RecordToInsert.cs" />
+    <Compile Include="Infrastructure\Reg.cs" />
     <Compile Include="Settings\AppSettings.cs" />
   </ItemGroup>
   <ItemGroup />
