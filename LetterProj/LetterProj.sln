@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsFace", "WinFormsFace\WinFormsFace.csproj", "{1469EB2F-4E59-4B31-9C84-475678378165}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyLetterManager", "MyLetterManager\MyLetterManager.csproj", "{66EA6AF0-9A52-40B2-A79B-B2300CAC5083}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCManager", "MyLetterManager\CCManager.csproj", "{66EA6AF0-9A52-40B2-A79B-B2300CAC5083}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbLayer", "DbLayer\DbLayer.csproj", "{33E67A07-9BAE-4941-9AB0-8096514C4C02}"
 EndProject

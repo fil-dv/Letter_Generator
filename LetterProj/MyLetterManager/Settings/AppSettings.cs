@@ -21,7 +21,7 @@ namespace Semaphore.Infrastructure.Settings
         //static string _pathToData = @"..\\..\\settings\\data.txt";
         //public static string PathToData { get { return _pathToData; } set { _pathToData = value; } }
 
-        static string _dbConnectionString = "User ID=import_user;password=sT7hk9Lm;Data Source=CD_WORK";
+        static string _dbConnectionString = "User ID=import_user;password=sT7hk9Lm;Data Source=CD_TEST";
         public static string DbConnectionString { get { return _dbConnectionString; } set { _dbConnectionString = value; } }
     }
 }

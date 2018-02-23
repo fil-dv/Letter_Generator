@@ -58,6 +58,12 @@
     <Compile Include="OtherForms\Form_regs.Designer.cs">
       <DependentUpon>Form_regs.cs</DependentUpon>
     </Compile>
+    <Compile Include="OtherForms\Priority_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OtherForms\Priority_Form.Designer.cs">
+      <DependentUpon>Priority_Form.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form_main.resx">
@@ -65,6 +71,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="OtherForms\Form_regs.resx">
       <DependentUpon>Form_regs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OtherForms\Priority_Form.resx">
+      <DependentUpon>Priority_Form.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -90,13 +99,16 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MyLetterManager\MyLetterManager.csproj">
+    <ProjectReference Include="..\MyLetterManager\CCManager.csproj">
       <Project>{66EA6AF0-9A52-40B2-A79B-B2300CAC5083}</Project>
-      <Name>MyLetterManager</Name>
+      <Name>CCManager</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\priority.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

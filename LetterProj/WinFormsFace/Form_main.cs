@@ -134,8 +134,6 @@ namespace WinFormsFace
             }            
             InitRegsCombo();
             comboBox_regs.Focus();
-           // Mediator.CurrentCreditor = comboBox_creditors.SelectedItem.ToString();
-           // InitRegForm();
         }
 
         private void InitRegForm()
@@ -163,8 +161,7 @@ namespace WinFormsFace
             comboBox_adr.Items.Add("АВР");
             comboBox_adr.Items.Add("Прописка + Фактический");
             comboBox_adr.Items.Add("Прописка + АВР");
-            comboBox_adr.Items.Add("Прописка + Фактический + АВР");
-            
+            comboBox_adr.Items.Add("Прописка + Фактический + АВР");            
             comboBox_adr.Items.Add("Рабочий");
            // comboBox_adr.SelectedIndex = 0;
         }
@@ -278,9 +275,7 @@ namespace WinFormsFace
             {
                 button_remove_reg.Enabled = false;
             }
-        }
-
-        
+        }        
 
         private void comboBox_regs_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -490,6 +485,13 @@ namespace WinFormsFace
             {
                 textBox_summa.Text = textBox_summa.Text.Remove(textBox_summa.Text.Length - 1);
             }
+        }
+
+        private void priority_menuItem_Click(object sender, EventArgs e)
+        {
+            Priority_Form pf = new Priority_Form();
+            pf.ShowDialog();
+            
         }
     }
 }
