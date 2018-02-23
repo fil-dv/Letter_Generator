@@ -13,18 +13,14 @@ using System.Windows.Forms;
 
 namespace MyLetterManager
 {
-
-
     public static class LetterManager
     {
         static OracleConnect _con;
        
         static public List<Creditor> _creditorList = new List<Creditor>();
         static public List<Reg> _creditorRegsList = new List<Reg>();
-     //   static public List<Deal> _dealList = new List<Deal>();
         static public List<LetterTemplate> _templateList = new List<LetterTemplate>();
         static public List<Condition> _listConditions = new List<Condition>();
-      //  static public string _adress_type = "";
 
         static public void ResetData()
         {
@@ -196,8 +192,6 @@ namespace MyLetterManager
             return isExist;
         }
 
-
-
         #region Add or remove pins by reg numbers
 
         static public void ChangeRegForGenerate(RecordToInsert record, Operation operation)
@@ -208,7 +202,6 @@ namespace MyLetterManager
                 if (operation == Operation.Insert)
                 {
                     DataToGenerate.RegList.Add(list[0]);
-                    WritePinsToFile(record);
                 }
                 else
                 {
@@ -223,25 +216,27 @@ namespace MyLetterManager
         }
 
         private static void WritePinsToFile(RecordToInsert record)
-        {
-            string query = "SELECT t.business_n FROM SUVD.PROJECTS t WHERE t.dogovor_id in ( " + GetRegsStr() + ")";
-            OracleDataReader reader = _con.GetReader(query);
+        {            
             File.WriteAllText("Imp.csv", String.Empty);
-            while (reader.Read())
+
+            if (DataToGenerate.RegList.Count > 0)
             {
-                File.AppendAllText("Imp.csv", reader[0].ToString());                
+                string query = "SELECT t.business_n FROM SUVD.PROJECTS t WHERE t.dogovor_id in ( " + GetRegsStr() + ")";
+                OracleDataReader reader = _con.GetReader(query);
+                List<RecordToInsert> recList = new List<RecordToInsert>();
+                while (reader.Read())
+                {
+                    RecordToInsert rec = new RecordToInsert { DealId = reader[0].ToString(), TemplateId = record.TemplateId, AdrType = record.AdrType };
+                    recList.Add(rec);
+                }
+                reader.Close();
+                AddPinFromFile(recList);
             }
-            reader.Close();
-            InsertToDbByBatFile();
-        }
-
-        private static void DbInsertOrRemove()
-        {
-            TruncateTable();
-
-
-            //string query = 
-        }
+            else
+            {
+                InsertToDbByBatFile();
+            }
+        }        
 
         public static string GetRegsStr()
         {
@@ -256,54 +251,7 @@ namespace MyLetterManager
             }
             return str;
         }
-        #endregion
-
-
-
-
-        //static public void SetAdressType(string adrType)
-        //{
-        //    _adress_type = adrType;
-        //}
-
-        //public static string WriteAdressType()
-        //{
-        //    switch (_adress_type)
-        //    {
-        //        case "Прописка":
-        //            return "1";
-        //            break;
-        //        case "Фактический":
-        //            return "3";
-        //            break;
-        //        case "Временной регистрации":
-        //            return "2";
-        //            break;
-        //        case "Рабочий":
-        //            return "4";
-        //            break;
-        //        default:
-        //            return "1";                   
-        //    }
-        //}
-
-
-
-        //public static string GetPinStr()
-        //{
-        //    string str = "";
-        //    if (DataToGenerate.DealList.Count > 0)
-        //    {
-        //        foreach (var item in DataToGenerate.DealList)
-        //        {
-        //            str += (item.DealId.ToString() + ",");
-        //        }
-        //        str = str.Remove(str.Count() - 1, 1);
-        //    }
-        //    return str;
-        //}
-
-
+        #endregion        
 
         static public int GetPinCountToGenerate()
         {
@@ -317,9 +265,6 @@ namespace MyLetterManager
             reader.Close();
             return count;
         }
-
-
-
 
         static public List<Condition> GetConditionsList()
         {
@@ -347,10 +292,7 @@ namespace MyLetterManager
                 if (item.Id == Convert.ToDecimal(conditionId)) item.IsUsed = isUsed;
             }           
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>Количество дел в очереди на генерацию</returns>
+
         static public int GetCountInQueueToGeneration()
         {
             int count = -1;
@@ -433,7 +375,7 @@ namespace MyLetterManager
         }
 
         private static void InsertToDbByBatFile()
-        {
+        {            
             Process proc = new Process();
             proc.Exited += new EventHandler(FileLoaded);
             proc.StartInfo.CreateNoWindow = true;
@@ -451,13 +393,6 @@ namespace MyLetterManager
                 FileLoadCompleted(true);
             }
         }
-
-        //static string GetScriptByAlias()
-        //{
-        //    string script = "";
-
-        //    return script;
-        //}
 
         private static void UpdateAddAdress()
         {

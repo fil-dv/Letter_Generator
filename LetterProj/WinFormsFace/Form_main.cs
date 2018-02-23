@@ -105,12 +105,13 @@ namespace WinFormsFace
             foreach (var item in templateList)
             {
                 comboBox_template.Items.Add(item.Id.ToString() /*+ " - "  + item.Name.Trim()*/);
-            }
-            
+            }            
         }
 
         void InitRegsCombo()
         {
+            comboBox_regs.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            comboBox_regs.AutoCompleteSource = AutoCompleteSource.ListItems;
             decimal creditorId = LetterManager.GetCreditorIdByTrimedAlias(comboBox_creditors.SelectedItem.ToString());
             List<Reg> regList = LetterManager.GetRegListByCreditorId(creditorId);
             foreach (var item in regList)
@@ -121,7 +122,18 @@ namespace WinFormsFace
 
         private void comboBox_creditors_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (comboBox_creditors.Text.Length > 0)
+            {
+                button_load_file.Enabled = false;
+                comboBox_regs.Enabled = true;
+                comboBox_ready_regs.Enabled = true;
+            }
+            else
+            {
+                button_load_file.Enabled = true;
+            }            
             InitRegsCombo();
+            comboBox_regs.Focus();
            // Mediator.CurrentCreditor = comboBox_creditors.SelectedItem.ToString();
            // InitRegForm();
         }
@@ -143,6 +155,8 @@ namespace WinFormsFace
 
         void InitAdrCombo()
         {
+            comboBox_adr.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            comboBox_adr.AutoCompleteSource = AutoCompleteSource.ListItems;
             comboBox_adr.Items.Clear();
             comboBox_adr.Items.Add("Прописка");
             comboBox_adr.Items.Add("Фактический");
@@ -161,8 +175,9 @@ namespace WinFormsFace
             LetterManager.ResetData();
             ClearCreditorsCombo();
             ClearRegsCombo();
-            ClearTemplateCombo();
             ClearReadyRegsCombo();
+            ClearAdrCombo();
+            ClearTemplateCombo();
             toolStripLabel_pins.Text = "0";
             toolStrip_template.Text = "";
             button_load_file.Text = "Загрузить из файла";
@@ -171,7 +186,17 @@ namespace WinFormsFace
             InitAdrCombo();
             InitCreditorsCombo();
             InitTemplateCombo();
-            InitConditions();            
+            InitConditions();
+            button_load_file.Enabled = false;
+            comboBox_creditors.Enabled = false;
+            comboBox_regs.Enabled = false;
+            comboBox_ready_regs.Enabled = false;
+        }
+
+        private void ClearAdrCombo()
+        {
+            comboBox_adr.Items.Clear();
+            comboBox_adr.Text = "";
         }
 
         void InitConditions()
@@ -255,9 +280,16 @@ namespace WinFormsFace
             }
         }
 
+        
+
         private void comboBox_regs_SelectedIndexChanged(object sender, EventArgs e)
         {
             CheckButtonAddEnable();
+            if (button_add_reg.Enabled)
+            {
+                button_add_reg.Focus();
+            }
+
         }
 
         private void comboBox_regs_TextChanged(object sender, EventArgs e)
@@ -295,12 +327,13 @@ namespace WinFormsFace
                 }
                 string template = comboBox_template.SelectedItem.ToString();
                 AdressType adrtype = (AdressType)comboBox_adr.SelectedIndex;
-                RecordToInsert recList = new RecordToInsert();
-                recList.Reestr.Id = id;
-                recList.AdrType = adrtype;
-                recList.TemplateId = template;
-                LetterManager.ChangeRegForGenerate(recList, Operation.Insert);
-                RefreshToolStripPin();
+                RecordToInsert record = new RecordToInsert();
+                record.Reestr = new Reg();
+                record.Reestr.Id = id;
+                record.AdrType = adrtype;
+                record.TemplateId = template;
+                LetterManager.ChangeRegForGenerate(record, Operation.Insert);
+                //RefreshToolStripPin();
                 comboBox_ready_regs.Items.Add(regName);
                 comboBox_regs.Items.Remove(regName);
                 comboBox_regs.Text = "";
@@ -316,8 +349,26 @@ namespace WinFormsFace
 
         private void comboBox_adr_SelectedIndexChanged(object sender, EventArgs e)
         {
-           // LetterManager.SetAdressType(comboBox_adr.SelectedItem.ToString());
-        } 
+            CheckControlsEnables();
+            if (comboBox_adr.Text.Length > 1)
+            {
+                comboBox_template.Focus();
+            }
+        }
+
+        private void CheckControlsEnables()
+        {
+            if (comboBox_adr.Text.Length < 1 || comboBox_template.Text.Length < 1)
+            {
+                button_load_file.Enabled = false;
+                comboBox_creditors.Enabled = false;
+            }
+            else
+            {
+                button_load_file.Enabled = true;
+                comboBox_creditors.Enabled = true;
+            }
+        }
 
         private void button_in_queue_Click(object sender, EventArgs e)
         {
@@ -337,6 +388,7 @@ namespace WinFormsFace
             {
                 comboBox_ready_regs.Items.Remove(reg);
                 RecordToInsert rec = new RecordToInsert();
+                rec.Reestr = new Reg();
                 rec.Reestr.Id = id;
                 LetterManager.ChangeRegForGenerate(rec, Operation.Remove);
                 RefreshToolStripPin();
@@ -350,6 +402,7 @@ namespace WinFormsFace
         {
             try
             {
+                CheckControlsEnables();
                 decimal templateId = Convert.ToDecimal(comboBox_template.Text);
                 string templateName = "";
                 if (LetterManager.IsTemplateExists(templateId, ref templateName))
@@ -361,6 +414,7 @@ namespace WinFormsFace
                     comboBox_template.Text = "";
                     toolStrip_template.Text = "";
                 }
+                comboBox_creditors.Focus();
             }
             catch (Exception ex)
             {
@@ -370,6 +424,7 @@ namespace WinFormsFace
 
         private void button_load_file_Click(object sender, EventArgs e)
         {
+            comboBox_creditors.Enabled = false;
             Stream myStream = null;
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = "Open Text File";
@@ -386,7 +441,7 @@ namespace WinFormsFace
                             MessageBox.Show("Не указан тип адреса или шаблон письма.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                         string template = comboBox_template.SelectedItem.ToString();
-                        AdressType adrtype = (AdressType)comboBox_adr.SelectedIndex; 
+                        AdressType adrtype = (AdressType)comboBox_adr.SelectedIndex;
                         List<RecordToInsert> recList = new List<RecordToInsert>();
 
                         using (myStream)
@@ -394,11 +449,15 @@ namespace WinFormsFace
                             var lines = File.ReadLines(ofd.FileName);
                             foreach (var line in lines)
                             {
-                                RecordToInsert rec = new RecordToInsert { DealId = line, TemplateId = template, AdrType = adrtype};
+                                RecordToInsert rec = new RecordToInsert { DealId = line, TemplateId = template, AdrType = adrtype };
                                 recList.Add(rec);
                             }
                         }
                         LetterManager.AddPinFromFile(recList);
+                    }
+                    else
+                    {
+                        comboBox_creditors.Enabled = true;
                     }
                 }
                 catch (Exception ex)
