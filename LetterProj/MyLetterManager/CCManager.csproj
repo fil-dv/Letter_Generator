@@ -56,9 +56,19 @@
     <Compile Include="Infrastructure\QueryBuilder.cs" />
     <Compile Include="Infrastructure\RecordToInsert.cs" />
     <Compile Include="Infrastructure\Reg.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Settings\AppSettings.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DbLayer\DbLayer.csproj">
       <Project>{33E67A07-9BAE-4941-9AB0-8096514C4C02}</Project>

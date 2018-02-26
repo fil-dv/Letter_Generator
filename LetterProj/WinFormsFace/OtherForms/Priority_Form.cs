@@ -20,6 +20,64 @@ namespace WinFormsFace.OtherForms
             InitializeComponent();
             InitControls();
             PriorityManager.CreateConnect();
+            EventSubscription();
+        }
+
+        void Reset()
+        {
+            label_all.Text = "";
+            label_update.Text = "";
+        }
+
+        private void EventSubscription()
+        {
+            PriorityManager.FileLoadCompleted += PriorityManager_FileLoadCompleted;
+            label_all.TextChanged += Label_all_TextChanged;
+            label_update.TextChanged += Label_update_TextChanged;
+        }
+
+        private void Label_update_TextChanged(object sender, EventArgs e)
+        {
+            SetButtonEnable();
+        }
+
+        private void Label_all_TextChanged(object sender, EventArgs e)
+        {
+            SetButtonEnable();
+        }
+
+        private void SetButtonEnable()
+        {
+            if ((label_all.Text.Length + label_update.Text.Length) > 37) // 13 + 23
+            {
+                button_upd_prior.Enabled = true;
+            }
+            else
+            {
+                button_upd_prior.Enabled = false;
+            }
+        }
+
+
+        private void PriorityManager_FileLoadCompleted(bool obj)
+        {
+
+            string priorValue = comboBox_priority.SelectedItem.ToString();
+            int readyForUpdate = -1;
+            if (InvokeRequired)
+            {
+                Action action = () =>
+                {
+                    readyForUpdate = PriorityManager.CheckUpdatePriority(priorValue);
+                };
+
+                Invoke(action); 
+            }
+            else
+            {
+                readyForUpdate = PriorityManager.CheckUpdatePriority(priorValue);
+            }            
+            label_update.Text = "Приоритет будет поднят для: " + readyForUpdate.ToString();
         }
 
         private void InitControls()
@@ -31,6 +89,7 @@ namespace WinFormsFace.OtherForms
 
         private void button_open_file_priority_Click(object sender, EventArgs e)
         {
+            Reset();
             if (comboBox_priority.Text.Length < 1)
             {
                 MessageBox.Show("Выберите приоритет.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -45,8 +104,7 @@ namespace WinFormsFace.OtherForms
                 try
                 {
                     if ((myStream = ofd.OpenFile()) != null)
-                    {                        
-                        string prior = comboBox_priority.SelectedItem.ToString();
+                    {   
                         List<Deal> pinList = new List<Deal>();
                         using (myStream)
                         {
@@ -56,12 +114,11 @@ namespace WinFormsFace.OtherForms
                                 Deal deal = new Deal { DealId = Convert.ToDecimal(line) };
                                 pinList.Add(deal);
                             }
-                        }
-                        string priorValue = comboBox_priority.SelectedItem.ToString();
+                        }                        
                         int allCount = pinList.Count;
-                        int readyForUpdate = PriorityManager.CheckUpdatePriority(pinList, priorValue);
-                        MessageBox.Show("Дел в файле - " + allCount + ", приоритет будет поднят по " + readyForUpdate, priorValue);
-                    }                   
+                        label_all.Text = "Дел в файле: " + allCount.ToString();
+                        PriorityManager.AddPinFromFile(pinList);
+                   }                   
                 }
                 catch (Exception ex)
                 {
@@ -80,6 +137,12 @@ namespace WinFormsFace.OtherForms
             {
                 button_open_file_priority.Enabled = false;
             }
+        }
+
+        private void button_upd_prior_Click(object sender, EventArgs e)
+        {
+            string priorValue = comboBox_priority.SelectedItem.ToString();
+            PriorityManager.UpdatePriority(priorValue);
         }
     }
 }

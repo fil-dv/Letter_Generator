@@ -493,5 +493,10 @@ namespace WinFormsFace
             pf.ShowDialog();
             
         }
+
+        private void exitMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

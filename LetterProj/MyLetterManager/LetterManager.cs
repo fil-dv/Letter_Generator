@@ -333,7 +333,7 @@ namespace MyLetterManager
 
          static public void AddPinFromFile(List<RecordToInsert> insertList)
         {
-            using (FileStream fs = new FileStream("Imp.csv", FileMode.Create))
+            using (FileStream fs = new FileStream(@"Imp.csv", FileMode.Create))
             using (StreamWriter sw = new StreamWriter(fs))
             {
                 foreach (var item in insertList)
@@ -382,6 +382,7 @@ namespace MyLetterManager
             proc.StartInfo.FileName = @"1_IMPORT.BAT";
             proc.EnableRaisingEvents = true;
             proc.Start();
+            UpdateAddAdress();
         }
 
         static void FileLoaded(object sender, EventArgs e)
@@ -402,11 +403,8 @@ namespace MyLetterManager
                              "FROM SUVD.PROJECTS p, suvd.contact_address ca " +
                             "WHERE t.deal_id = p.business_n " +
                               "AND t.adr_type = ca.role " +
-                              "AND p.debtor_contact_id = ca.contact_id)";// +
-                                     //  "AND ca.zip_code IS NOT NULL)";
+                              "AND p.debtor_contact_id = ca.contact_id)";
             _con.ExecCommand(query);
-            //query = "DELETE FROM LET_APP t WHERE t.adr IS NULL";
-            //_con.ExecCommand(query);
         }
 
         static public event Action<bool> FileLoadCompleted;

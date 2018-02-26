@@ -32,6 +32,9 @@
             this.comboBox_priority = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.button_open_file_priority = new System.Windows.Forms.Button();
+            this.label_update = new System.Windows.Forms.Label();
+            this.label_all = new System.Windows.Forms.Label();
+            this.button_upd_prior = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // comboBox_priority
@@ -62,11 +65,41 @@
             this.button_open_file_priority.UseVisualStyleBackColor = true;
             this.button_open_file_priority.Click += new System.EventHandler(this.button_open_file_priority_Click);
             // 
+            // label_update
+            // 
+            this.label_update.AutoSize = true;
+            this.label_update.Location = new System.Drawing.Point(28, 156);
+            this.label_update.Name = "label_update";
+            this.label_update.Size = new System.Drawing.Size(0, 13);
+            this.label_update.TabIndex = 4;
+            // 
+            // label_all
+            // 
+            this.label_all.AutoSize = true;
+            this.label_all.Location = new System.Drawing.Point(61, 121);
+            this.label_all.Name = "label_all";
+            this.label_all.Size = new System.Drawing.Size(0, 13);
+            this.label_all.TabIndex = 5;
+            // 
+            // button_upd_prior
+            // 
+            this.button_upd_prior.Enabled = false;
+            this.button_upd_prior.Location = new System.Drawing.Point(45, 205);
+            this.button_upd_prior.Name = "button_upd_prior";
+            this.button_upd_prior.Size = new System.Drawing.Size(151, 23);
+            this.button_upd_prior.TabIndex = 6;
+            this.button_upd_prior.Text = "Поднять приоритет";
+            this.button_upd_prior.UseVisualStyleBackColor = true;
+            this.button_upd_prior.Click += new System.EventHandler(this.button_upd_prior_Click);
+            // 
             // Priority_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(237, 280);
+            this.ClientSize = new System.Drawing.Size(237, 257);
+            this.Controls.Add(this.button_upd_prior);
+            this.Controls.Add(this.label_all);
+            this.Controls.Add(this.label_update);
             this.Controls.Add(this.button_open_file_priority);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox_priority);
@@ -84,5 +117,8 @@
         private System.Windows.Forms.ComboBox comboBox_priority;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button_open_file_priority;
+        private System.Windows.Forms.Label label_update;
+        private System.Windows.Forms.Label label_all;
+        private System.Windows.Forms.Button button_upd_prior;
     }
 }
