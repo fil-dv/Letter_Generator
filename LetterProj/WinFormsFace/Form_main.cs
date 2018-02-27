@@ -206,7 +206,7 @@ namespace WinFormsFace
                 {
                     _checkBoxeslist[i].Text = conditionList[i].Text;
                     _checkBoxeslist[i].Name = conditionList[i].Id.ToString();
-                    if (conditionList[i].IsUsed)
+                    if (conditionList[i].IsChecked)
                     {
                         _checkBoxeslist[i].Checked = true;
                     }

@@ -11,6 +11,6 @@ namespace MyLetterManager.Repo
         public decimal Id { get; set; }
         public string Text { get; set; }
         public string Script { get; set; }
-        public bool IsUsed { get; set; }
+        public bool IsChecked { get; set; }
     }
 }

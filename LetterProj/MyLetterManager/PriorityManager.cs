@@ -12,8 +12,6 @@ using System.Windows.Forms;
 using ExcelLibrary.SpreadSheet;
 
 
-
-
 namespace MyLetterManager
 {
     public static class PriorityManager
@@ -135,7 +133,8 @@ namespace MyLetterManager
                                                            "from LET_APP t, suvd.projects p " +
                                                           "where p.business_n = t.deal_id) " +
                                     "and s.priority_value < " + priorityValue;
-            int res = _con.ExecCommand(query);
+            //int res = _con.ExecCommand(query);
+            _con.ExecCommand(query);
             //if (res == 1)
             //{
             //    MessageBox.Show("Готово.");
@@ -175,13 +174,13 @@ namespace MyLetterManager
                 reader.Close();
                 workbook.Worksheets.Add(worksheet);
                 workbook.Save(file);
-                if (i == 1)
+                if (i == 0)
                 {
-                    MessageBox.Show("Готово, путь к файлу отчета: " + path, "Excel отчет");
+                    MessageBox.Show("Сегодня еще не было поднятий приоритетов дел. ", "Приоритеты");                    
                 }
                 else
                 {
-                    MessageBox.Show("Сегодня еще не было поднятий приоритетов дел. ", "Приоритеты");
+                    MessageBox.Show("Готово, путь к файлу отчета: " + path, "Excel отчет");
                 }
             }
             catch (IOException)

@@ -256,7 +256,16 @@ namespace MyLetterManager
         static public int GetPinCountToGenerate()
         {
             int count = 0;
-            string query = "select count(*) from LET_APP";
+            string query = "";
+            if (_listConditions.Count == 0)
+            {
+                query = "select count(*) from LET_APP";
+            }
+            else
+            {
+                query = "SELECT count(*) FROM let_app WHERE ";
+                AddConditions(ref query);
+            }
             OracleDataReader reader = _con.GetReader(query);
             while (reader.Read())
             {
@@ -264,6 +273,18 @@ namespace MyLetterManager
             }
             reader.Close();
             return count;
+        }
+
+        private static void AddConditions(ref string query)
+        {
+            List<Condition> checkedList = _listConditions.Where(c => c.IsChecked == true).ToList();
+            if (checkedList.Count > 0)
+            {
+                foreach (var item in checkedList)
+                {
+                    query += (item.Script + " AND ");
+                }
+            }
         }
 
         static public List<Condition> GetConditionsList()
@@ -277,19 +298,19 @@ namespace MyLetterManager
                 con.Id = Convert.ToDecimal(reader[0]);
                 con.Text = reader[1].ToString();
                 con.Script = reader[2].ToString();                
-                if (Convert.ToInt32(reader[3]) == 0) con.IsUsed = false;
-                else con.IsUsed = true;
+                if (Convert.ToInt32(reader[3]) == 0) con.IsChecked = false;
+                else con.IsChecked = true;
                 _listConditions.Add(con);
             }
             reader.Close();
             return _listConditions;
         }
 
-        static public void ChangeConditionUsing(string conditionId, bool isUsed)
+        static public void ChangeConditionUsing(string conditionId, bool isChecked)
         {
             foreach (var item in _listConditions)
             {
-                if (item.Id == Convert.ToDecimal(conditionId)) item.IsUsed = isUsed;
+                if (item.Id == Convert.ToDecimal(conditionId)) item.IsChecked = isChecked;
             }           
         }
 
@@ -382,7 +403,7 @@ namespace MyLetterManager
             proc.StartInfo.FileName = @"1_IMPORT.BAT";
             proc.EnableRaisingEvents = true;
             proc.Start();
-            UpdateAddAdress();
+            //UpdateAddAdress();
         }
 
         static void FileLoaded(object sender, EventArgs e)
@@ -403,7 +424,10 @@ namespace MyLetterManager
                              "FROM SUVD.PROJECTS p, suvd.contact_address ca " +
                             "WHERE t.deal_id = p.business_n " +
                               "AND t.adr_type = ca.role " +
-                              "AND p.debtor_contact_id = ca.contact_id)";
+                              "AND p.debtor_contact_id = ca.contact_id " +
+                              "AND ca.zip_code is not null)";
+            _con.ExecCommand(query);
+            query = "delete from LET_APP t WHERE t.adr is null";
             _con.ExecCommand(query);
         }
 

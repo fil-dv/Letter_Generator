@@ -27,13 +27,14 @@ namespace DbLayer
             _con.Dispose();
         }
 
-        public int ExecCommand(string query)
+        public void ExecCommand(string query)
         {
-            int res = -1;
+           // int res = -1;
             _cmd = new OracleCommand(query, _con);
-            res = _cmd.ExecuteNonQuery();            
+            //res = _cmd.ExecuteNonQuery();            
+            _cmd.ExecuteNonQuery();
             _cmd.Dispose();
-            return res;
+           // return res;
         }
 
         public OracleDataReader GetReader(string query)
