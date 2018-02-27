@@ -35,6 +35,7 @@
             this.label_update = new System.Windows.Forms.Label();
             this.label_all = new System.Windows.Forms.Label();
             this.button_upd_prior = new System.Windows.Forms.Button();
+            this.button_priority_report = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // comboBox_priority
@@ -92,11 +93,22 @@
             this.button_upd_prior.UseVisualStyleBackColor = true;
             this.button_upd_prior.Click += new System.EventHandler(this.button_upd_prior_Click);
             // 
+            // button_priority_report
+            // 
+            this.button_priority_report.Location = new System.Drawing.Point(24, 251);
+            this.button_priority_report.Name = "button_priority_report";
+            this.button_priority_report.Size = new System.Drawing.Size(194, 23);
+            this.button_priority_report.TabIndex = 7;
+            this.button_priority_report.Text = "Посмотреть отчет за сегодня";
+            this.button_priority_report.UseVisualStyleBackColor = true;
+            this.button_priority_report.Click += new System.EventHandler(this.button_priority_report_Click);
+            // 
             // Priority_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(237, 257);
+            this.ClientSize = new System.Drawing.Size(237, 298);
+            this.Controls.Add(this.button_priority_report);
             this.Controls.Add(this.button_upd_prior);
             this.Controls.Add(this.label_all);
             this.Controls.Add(this.label_update);
@@ -120,5 +132,6 @@
         private System.Windows.Forms.Label label_update;
         private System.Windows.Forms.Label label_all;
         private System.Windows.Forms.Button button_upd_prior;
+        private System.Windows.Forms.Button button_priority_report;
     }
 }

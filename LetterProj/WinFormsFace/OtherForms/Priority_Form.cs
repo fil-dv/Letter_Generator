@@ -15,6 +15,7 @@ namespace WinFormsFace.OtherForms
 {
     public partial class Priority_Form : Form
     {
+        string _pathToFile = "";
         public Priority_Form()
         {
             InitializeComponent();
@@ -60,25 +61,28 @@ namespace WinFormsFace.OtherForms
 
 
         private void PriorityManager_FileLoadCompleted(bool obj)
-        {
-
-            string priorValue = comboBox_priority.SelectedItem.ToString();
+        {            
             int readyForUpdate = -1;
             if (InvokeRequired)
             {
                 Action action = () =>
                 {
+                    string priorValue = comboBox_priority.SelectedItem.ToString();
                     readyForUpdate = PriorityManager.CheckUpdatePriority(priorValue);
+                    label_update.Text = "Приоритет будет поднят для: " + readyForUpdate.ToString();
                 };
 
                 Invoke(action); 
             }
             else
             {
+                string priorValue = comboBox_priority.SelectedItem.ToString();
                 readyForUpdate = PriorityManager.CheckUpdatePriority(priorValue);
-            }            
-            label_update.Text = "Приоритет будет поднят для: " + readyForUpdate.ToString();
+                label_update.Text = "Приоритет будет поднят для: " + readyForUpdate.ToString();
+            }
         }
+
+
 
         private void InitControls()
         {
@@ -103,6 +107,7 @@ namespace WinFormsFace.OtherForms
             {
                 try
                 {
+                    _pathToFile = ofd.FileName;
                     if ((myStream = ofd.OpenFile()) != null)
                     {   
                         List<Deal> pinList = new List<Deal>();
@@ -143,6 +148,13 @@ namespace WinFormsFace.OtherForms
         {
             string priorValue = comboBox_priority.SelectedItem.ToString();
             PriorityManager.UpdatePriority(priorValue);
+        }
+
+        private void button_priority_report_Click(object sender, EventArgs e)
+        {
+            //string pathToFolder = _pathToFile.Substring(0, _pathToFile.LastIndexOf("\\")) + "\\";
+            //PriorityManager.CreateExcelReport(pathToFolder);
+            PriorityManager.CreateExcelReport();
         }
     }
 }
