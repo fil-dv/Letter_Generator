@@ -136,47 +136,62 @@ namespace MyLetterManager
                                                           "where p.business_n = t.deal_id) " +
                                     "and s.priority_value < " + priorityValue;
             int res = _con.ExecCommand(query);
-            if (res == 1)
-            {
-                MessageBox.Show("Готово.");
-            }
+            //if (res == 1)
+            //{
+            //    MessageBox.Show("Готово.");
+            //}
+            MessageBox.Show("Готово.");
         }
 
 
         public static void CreateExcelReport(string path = @"d:\priority.xls")
         {
-            //create new xls file 
-            string file = path;
-            Workbook workbook = new Workbook();
-            Worksheet worksheet = new Worksheet("Priority_report");
-
-            string query = "select t.business_n, t.cred, t.reg, t.dt, t.priority " +
-                             "from REPORT.PRIORITY t " +
-                            "where trunc(t.dt) > trunc(sysdate)";
-            OracleDataReader reader = _con.GetReader(query);
-            worksheet.Cells[0, 0] = new Cell("Пин");
-            worksheet.Cells[0, 1] = new Cell("Кредитор");
-            worksheet.Cells[0, 2] = new Cell("Реестр");
-            worksheet.Cells[0, 3] = new Cell("Дата");
-            worksheet.Cells[0, 4] = new Cell("Приоритет");
-
-            int i = 0;
-            while (reader.Read())
+            try
             {
-                i += 1;
-                worksheet.Cells[i, 0] = new Cell(reader[0].ToString());
-                worksheet.Cells[i, 1] = new Cell(reader[1].ToString());
-                worksheet.Cells[i, 2] = new Cell(reader[2].ToString());
-                worksheet.Cells[i, 3] = new Cell(reader[3].ToString());
-                worksheet.Cells[i, 4] = new Cell(reader[4].ToString());
+                string file = path;
+                Workbook workbook = new Workbook();
+                Worksheet worksheet = new Worksheet("Priority_report");
+
+                string query = "select t.business_n, t.cred, t.reg, t.dt, t.priority " +
+                                 "from REPORT.PRIORITY t " +
+                                "where trunc(t.dt) = trunc(sysdate)";
+                OracleDataReader reader = _con.GetReader(query);
+                worksheet.Cells[0, 0] = new Cell("Пин");
+                worksheet.Cells[0, 1] = new Cell("Кредитор");
+                worksheet.Cells[0, 2] = new Cell("Реестр");
+                worksheet.Cells[0, 3] = new Cell("Дата");
+                worksheet.Cells[0, 4] = new Cell("Приоритет");
+
+                int i = 0;
+                while (reader.Read())
+                {
+                    i += 1;
+                    worksheet.Cells[i, 0] = new Cell(reader[0].ToString());
+                    worksheet.Cells[i, 1] = new Cell(reader[1].ToString());
+                    worksheet.Cells[i, 2] = new Cell(reader[2].ToString());
+                    worksheet.Cells[i, 3] = new Cell(reader[3].ToString());
+                    worksheet.Cells[i, 4] = new Cell(reader[4].ToString());
+                }
+                reader.Close();
+                workbook.Worksheets.Add(worksheet);
+                workbook.Save(file);
+                if (i == 1)
+                {
+                    MessageBox.Show("Готово, путь к файлу отчета: " + path, "Excel отчет");
+                }
+                else
+                {
+                    MessageBox.Show("Сегодня еще не было поднятий приоритетов дел. ", "Приоритеты");
+                }
             }
-            reader.Close();
-            workbook.Worksheets.Add(worksheet);
-            workbook.Save(file);
-
-            // open xls file Workbook book = Workbook.Load(file); Worksheet sheet = book.Worksheets[0];
-
-            MessageBox.Show("Готово. "  + path, "Excel отчет");
+            catch (IOException)
+            {
+                MessageBox.Show("Похоже файл уже используется. Закройте файл и повторите попытку.", "Ошибка доступа к файлу", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Похоже что-то пошло не так..." + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }         
         }
     }
 }
