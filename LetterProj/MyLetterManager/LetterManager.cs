@@ -257,14 +257,15 @@ namespace MyLetterManager
         {
             int count = 0;
             string query = "";
-            if (_listConditions.Count == 0)
+            List<Condition> checkedList = _listConditions.Where(c => c.IsChecked == true).ToList();
+            if (checkedList.Count == 0)
             {
                 query = "select count(*) from LET_APP";
             }
             else
             {
                 query = "SELECT count(*) FROM let_app WHERE ";
-                AddConditions(ref query);
+                AddConditionsToQuery(ref query);
             }
             OracleDataReader reader = _con.GetReader(query);
             while (reader.Read())
@@ -275,7 +276,7 @@ namespace MyLetterManager
             return count;
         }
 
-        private static void AddConditions(ref string query)
+        private static void AddConditionsToQuery(ref string query)
         {
             List<Condition> checkedList = _listConditions.Where(c => c.IsChecked == true).ToList();
             if (checkedList.Count > 0)
@@ -284,6 +285,7 @@ namespace MyLetterManager
                 {
                     query += (item.Script + " AND ");
                 }
+                query = query.Substring(0, query.LastIndexOf("AND"));
             }
         }
 

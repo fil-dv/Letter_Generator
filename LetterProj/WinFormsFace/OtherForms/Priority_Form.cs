@@ -61,28 +61,27 @@ namespace WinFormsFace.OtherForms
 
 
         private void PriorityManager_FileLoadCompleted(bool obj)
-        {            
-            int readyForUpdate = -1;
+        {   
             if (InvokeRequired)
             {
                 Action action = () =>
                 {
-                    string priorValue = comboBox_priority.SelectedItem.ToString();
-                    readyForUpdate = PriorityManager.CheckUpdatePriority(priorValue);
-                    label_update.Text = "Приоритет будет поднят для: " + readyForUpdate.ToString();
+                    UpdateLabel();
                 };
-
                 Invoke(action); 
             }
             else
             {
-                string priorValue = comboBox_priority.SelectedItem.ToString();
-                readyForUpdate = PriorityManager.CheckUpdatePriority(priorValue);
-                label_update.Text = "Приоритет будет поднят для: " + readyForUpdate.ToString();
+                UpdateLabel();
             }
         }
 
-
+        void UpdateLabel()
+        {
+            string priorValue = comboBox_priority.SelectedItem.ToString();
+            int readyForUpdate = PriorityManager.CheckUpdatePriority(priorValue);
+            label_update.Text = "Приоритет будет поднят для: " + readyForUpdate.ToString();
+        }
 
         private void InitControls()
         {
