@@ -252,6 +252,7 @@ namespace WinFormsFace
                 {
                     LetterManager.ChangeConditionUsing(cb.Name, false);
                 }
+                RefreshToolStripPin();
             }
             catch (Exception ex)
             {
@@ -386,7 +387,7 @@ namespace WinFormsFace
                 rec.Reestr = new Reg();
                 rec.Reestr.Id = id;
                 LetterManager.ChangeRegForGenerate(rec, Operation.Remove);
-                RefreshToolStripPin();
+               // RefreshToolStripPin();
                 comboBox_regs.Items.Add(reg);
                 comboBox_ready_regs.Text = "";
                 button_remove_reg.Enabled = false;

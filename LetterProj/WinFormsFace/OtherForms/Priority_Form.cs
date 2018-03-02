@@ -22,6 +22,7 @@ namespace WinFormsFace.OtherForms
             InitControls();
             PriorityManager.CreateConnect();
             EventSubscription();
+            RefreshToolStrip();
         }
 
         void Reset()
@@ -33,8 +34,23 @@ namespace WinFormsFace.OtherForms
         private void EventSubscription()
         {
             PriorityManager.FileLoadCompleted += PriorityManager_FileLoadCompleted;
+            PriorityManager.UpdatePriorityCompleted += PriorityManager_UpdatePriorityCompleted;
             label_all.TextChanged += Label_all_TextChanged;
             label_update.TextChanged += Label_update_TextChanged;
+        }
+
+        private void PriorityManager_UpdatePriorityCompleted(bool obj)
+        {
+            Reset();
+            RefreshToolStrip();
+        }
+
+        private void RefreshToolStrip()
+        {
+            int count = PriorityManager.GetCountUpdatedPins("251");
+            toolStrip_251.Text = count.ToString();
+            count = PriorityManager.GetCountUpdatedPins("255");
+            toolStrip_255.Text = count.ToString();
         }
 
         private void Label_update_TextChanged(object sender, EventArgs e)

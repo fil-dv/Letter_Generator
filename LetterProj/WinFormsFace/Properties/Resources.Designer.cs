@@ -73,9 +73,9 @@ namespace WinFormsFace.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon priority {
+        internal static System.Drawing.Icon prior {
             get {
-                object obj = ResourceManager.GetObject("priority", resourceCulture);
+                object obj = ResourceManager.GetObject("prior", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

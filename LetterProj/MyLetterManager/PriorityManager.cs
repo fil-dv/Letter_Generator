@@ -17,6 +17,8 @@ namespace MyLetterManager
     public static class PriorityManager
     {
         static OracleConnect _con;
+        static public event Action<bool> UpdatePriorityCompleted;
+        static public event Action<bool> FileLoadCompleted;
 
         public static void CreateConnect()
         {
@@ -45,8 +47,6 @@ namespace MyLetterManager
                 MessageBox.Show("Exception from MyLetterManager.PriorityManager.ExecCommand()" + ex.Message);
             }
         }
-
-
 
         static public void AddPinFromFile(List<Deal> insertList)
         {
@@ -78,9 +78,7 @@ namespace MyLetterManager
             {
                 FileLoadCompleted(true);
             }
-        }
-
-        static public event Action<bool> FileLoadCompleted;
+        }        
 
         public static int CheckUpdatePriority(string priorityValue)
         {
@@ -133,15 +131,29 @@ namespace MyLetterManager
                                                            "from LET_APP t, suvd.projects p " +
                                                           "where p.business_n = t.deal_id) " +
                                     "and s.priority_value < " + priorityValue;
-            //int res = _con.ExecCommand(query);
-            _con.ExecCommand(query);
-            //if (res == 1)
-            //{
-            //    MessageBox.Show("Готово.");
-            //}
-            MessageBox.Show("Готово.");
+             _con.ExecCommand(query);
+
+            if (UpdatePriorityCompleted != null)
+            {
+                UpdatePriorityCompleted(true);
+            }
         }
 
+        static public int GetCountUpdatedPins(string priorityValue)
+        {
+            int count = 0;
+            string query = "select count(*) " +
+                             "from REPORT.PRIORITY t " +
+                            "where trunc(t.dt) = trunc(sysdate) " +
+                              "and t.priority = " + priorityValue;
+            OracleDataReader reader = _con.GetReader(query);
+            while (reader.Read())
+            {
+                count = Convert.ToInt32(reader[0]);
+            }
+            reader.Close();
+            return count;
+        }
 
         public static void CreateExcelReport(string path = @"d:\priority.xls")
         {

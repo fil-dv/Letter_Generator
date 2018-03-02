@@ -264,7 +264,12 @@ namespace MyLetterManager
             }
             else
             {
-                query = "SELECT count(*) FROM let_app WHERE ";
+                query = "SELECT count(*) " + 
+                          "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
+                         "WHERE l.deal_id = p.business_n " + 
+                           "AND a.contact_id = p.debtor_contact_id " +
+                           "AND c.id = p.debtor_contact_id " +
+                           "AND a.role = l.adr_type";
                 AddConditionsToQuery(ref query);
             }
             OracleDataReader reader = _con.GetReader(query);
@@ -283,9 +288,9 @@ namespace MyLetterManager
             {
                 foreach (var item in checkedList)
                 {
-                    query += (item.Script + " AND ");
+                    query += (" AND " + item.Script);
                 }
-                query = query.Substring(0, query.LastIndexOf("AND"));
+                //query = query.Substring(0, query.LastIndexOf("AND"));
             }
         }
 
@@ -405,7 +410,6 @@ namespace MyLetterManager
             proc.StartInfo.FileName = @"1_IMPORT.BAT";
             proc.EnableRaisingEvents = true;
             proc.Start();
-            //UpdateAddAdress();
         }
 
         static void FileLoaded(object sender, EventArgs e)
@@ -429,8 +433,8 @@ namespace MyLetterManager
                               "AND p.debtor_contact_id = ca.contact_id " +
                               "AND ca.zip_code is not null)";
             _con.ExecCommand(query);
-            query = "delete from LET_APP t WHERE t.adr is null";
-            _con.ExecCommand(query);
+          //  query = "delete from LET_APP t WHERE t.adr is null";
+          //  _con.ExecCommand(query);
         }
 
         static public event Action<bool> FileLoadCompleted;
