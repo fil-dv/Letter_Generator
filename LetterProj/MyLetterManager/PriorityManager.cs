@@ -196,7 +196,7 @@ namespace MyLetterManager
             }
             catch (IOException)
             {
-                MessageBox.Show("Похоже файл уже используется. Закройте файл и повторите попытку.", "Ошибка доступа к файлу", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Похоже файл \"priority.xls\" уже используется. Закройте файл и повторите попытку.", "Ошибка доступа к файлу", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {

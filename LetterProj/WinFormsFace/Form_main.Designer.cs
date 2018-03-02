@@ -55,13 +55,11 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.button_in_queue = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button_to_generate = new System.Windows.Forms.Button();
             this.comboBox_ready_regs = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.button_remove_reg = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.button_plus = new System.Windows.Forms.Button();
-            this.button_menus = new System.Windows.Forms.Button();
+            this.button_letter_report = new System.Windows.Forms.Button();
             this.comboBox_template = new System.Windows.Forms.ComboBox();
             this.textBox_summa = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -280,15 +278,15 @@
             this.button_in_queue.UseVisualStyleBackColor = true;
             this.button_in_queue.Click += new System.EventHandler(this.button_in_queue_Click);
             // 
-            // button1
+            // button_to_generate
             // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button1.Location = new System.Drawing.Point(431, 467);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(196, 69);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "Отправить на генерацию";
-            this.button1.UseVisualStyleBackColor = true;
+            this.button_to_generate.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button_to_generate.Location = new System.Drawing.Point(431, 467);
+            this.button_to_generate.Name = "button_to_generate";
+            this.button_to_generate.Size = new System.Drawing.Size(196, 69);
+            this.button_to_generate.TabIndex = 12;
+            this.button_to_generate.Text = "Отправить на генерацию";
+            this.button_to_generate.UseVisualStyleBackColor = true;
             // 
             // comboBox_ready_regs
             // 
@@ -318,33 +316,15 @@
             this.button_remove_reg.UseVisualStyleBackColor = true;
             this.button_remove_reg.Click += new System.EventHandler(this.button_remove_reg_Click);
             // 
-            // label6
+            // button_letter_report
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(461, 318);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(144, 13);
-            this.label6.TabIndex = 16;
-            this.label6.Text = "Посмотреть список пинов:";
-            // 
-            // button_plus
-            // 
-            this.button_plus.Location = new System.Drawing.Point(430, 346);
-            this.button_plus.Name = "button_plus";
-            this.button_plus.Size = new System.Drawing.Size(95, 23);
-            this.button_plus.TabIndex = 17;
-            this.button_plus.Text = "+";
-            this.button_plus.UseVisualStyleBackColor = true;
-            // 
-            // button_menus
-            // 
-            this.button_menus.Location = new System.Drawing.Point(533, 346);
-            this.button_menus.Name = "button_menus";
-            this.button_menus.Size = new System.Drawing.Size(94, 23);
-            this.button_menus.TabIndex = 18;
-            this.button_menus.Text = "-";
-            this.button_menus.UseVisualStyleBackColor = true;
-            this.button_menus.Click += new System.EventHandler(this.button_menus_Click);
+            this.button_letter_report.Location = new System.Drawing.Point(431, 283);
+            this.button_letter_report.Name = "button_letter_report";
+            this.button_letter_report.Size = new System.Drawing.Size(195, 23);
+            this.button_letter_report.TabIndex = 18;
+            this.button_letter_report.Text = "Cоздать excel отчет";
+            this.button_letter_report.UseVisualStyleBackColor = true;
+            this.button_letter_report.Click += new System.EventHandler(this.button_menus_Click);
             // 
             // comboBox_template
             // 
@@ -391,13 +371,11 @@
             this.Controls.Add(this.label7);
             this.Controls.Add(this.textBox_summa);
             this.Controls.Add(this.comboBox_template);
-            this.Controls.Add(this.button_menus);
-            this.Controls.Add(this.button_plus);
-            this.Controls.Add(this.label6);
+            this.Controls.Add(this.button_letter_report);
             this.Controls.Add(this.button_remove_reg);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.comboBox_ready_regs);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.button_to_generate);
             this.Controls.Add(this.button_in_queue);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -445,13 +423,11 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripLabel_template;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
         private System.Windows.Forms.Button button_in_queue;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_to_generate;
         private System.Windows.Forms.ComboBox comboBox_ready_regs;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button button_remove_reg;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button_plus;
-        private System.Windows.Forms.Button button_menus;
+        private System.Windows.Forms.Button button_letter_report;
         private System.Windows.Forms.ComboBox comboBox_template;
         private System.Windows.Forms.ToolStripStatusLabel toolStrip_template;
         private System.Windows.Forms.TextBox textBox_summa;

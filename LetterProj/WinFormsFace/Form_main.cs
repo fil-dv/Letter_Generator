@@ -181,6 +181,8 @@ namespace WinFormsFace
             button_load_file.Text = "Загрузить из файла";
             button_add_reg.Enabled = false;
             button_remove_reg.Enabled = false;
+            button_letter_report.Enabled = false;
+            button_to_generate.Enabled = false;
             InitAdrCombo();
             InitCreditorsCombo();
             InitTemplateCombo();
@@ -200,7 +202,6 @@ namespace WinFormsFace
         void InitConditions()
         {
             List<Condition> conditionList = LetterManager.GetConditionsList();
-
             try
             {
                 for (int i = 0; i < conditionList.Count; i++)
@@ -359,6 +360,35 @@ namespace WinFormsFace
         {
             int countForGenerate = LetterManager.GetPinCountToGenerate(textBox_summa.Text.Length > 0? textBox_summa.Text : "0" );
             toolStripLabel_pins.Text = countForGenerate.ToString();
+            SetXlsReportButtonEnable();
+        }
+
+        void SetXlsReportButtonEnable()
+        {
+            if (InvokeRequired)
+            {
+                Action action = () =>
+                {
+                    UpdateButtonEnable();
+                };
+                Invoke(action);
+            }
+            else
+            {
+                UpdateButtonEnable();
+            }            
+        }
+
+        void UpdateButtonEnable()
+        {
+            if (LetterManager.IsExistPinsInTable())
+            {
+                button_letter_report.Enabled = true;
+            }
+            else
+            {
+                button_letter_report.Enabled = false;
+            }
         }
 
         private void comboBox_adr_SelectedIndexChanged(object sender, EventArgs e)

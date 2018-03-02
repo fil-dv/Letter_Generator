@@ -12,5 +12,6 @@ namespace MyLetterManager.Repo
         public string Text { get; set; }
         public string Script { get; set; }
         public bool IsChecked { get; set; }
+        public string Alternative { get; set; }
     }
 }

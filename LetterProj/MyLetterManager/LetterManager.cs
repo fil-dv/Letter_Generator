@@ -17,7 +17,9 @@ namespace MyLetterManager
     public static class LetterManager
     {
         static OracleConnect _con;
-       
+
+        static public event Action<bool> FileLoadCompleted;
+
         static public List<Creditor> _creditorList = new List<Creditor>();
         static public List<Reg> _creditorRegsList = new List<Reg>();
         static public List<LetterTemplate> _templateList = new List<LetterTemplate>();
@@ -27,11 +29,9 @@ namespace MyLetterManager
         {
             _creditorList.Clear();
             _creditorRegsList.Clear();
-         //   _dealList.Clear();
             _templateList.Clear();
             _listConditions.Clear();
             DataToGenerate.Reset();
-            // _adress_type = "";
             TruncateTable();
         }
 
@@ -302,16 +302,17 @@ namespace MyLetterManager
         static public List<Condition> GetConditionsList()
         {
             _listConditions.Clear();
-            string query = "select t.id, t.description, t.script, t.is_used from LETTERS_CONDITIONS t";
+            string query = "select t.id, t.description, t.script, t.is_used, t.alternative from LETTERS_CONDITIONS t";
             OracleDataReader reader = _con.GetReader(query);
             while (reader.Read())
             {
                 Condition con = new Condition();
                 con.Id = Convert.ToDecimal(reader[0]);
                 con.Text = reader[1].ToString();
-                con.Script = reader[2].ToString();                
+                con.Script = reader[2].ToString();  
                 if (Convert.ToInt32(reader[3]) == 0) con.IsChecked = false;
                 else con.IsChecked = true;
+                con.Alternative = reader[4].ToString();
                 _listConditions.Add(con);
             }
             reader.Close();
@@ -441,63 +442,100 @@ namespace MyLetterManager
           //  query = "delete from LET_APP t WHERE t.adr is null";
           //  _con.ExecCommand(query);
         }
-
-        static public event Action<bool> FileLoadCompleted;
-
-
+        
         static public void CreateExcelReport(string minSum, string path = @"..\..\xls\leters.xls")
         {
-            string file = path;
-            Workbook workbook = new Workbook();
-            Worksheet worksheet_plus = new Worksheet("+");
-            string query = "SELECT p.business_n " +
-                             "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
-                            "WHERE l.deal_id = p.business_n " +
-                              "AND a.contact_id = p.debtor_contact_id " +
-                              "AND c.id = p.debtor_contact_id " +
-                              "AND a.role = l.adr_type";
-            AddConditionsToQuery(ref query, minSum);
-            OracleDataReader reader = _con.GetReader(query);
-            worksheet_plus.Cells[0, 0] = new Cell("Пин");
-            int i = 0;
-            while (reader.Read())
+            try
             {
-                i += 1;
-                worksheet_plus.Cells[i, 0] = new Cell(reader[0].ToString());               
-            }
-            reader.Close();
-            workbook.Worksheets.Add(worksheet_plus);
-            //workbook.Save(file);
-            
-            Worksheet worksheet_minus = new Worksheet("-");
-            List<Condition> checkedList = _listConditions.Where(c => c.IsChecked == true).ToList();
-            if(checkedList.Count > 0)
-            {
-                foreach (var item in checkedList)
+                string file = path;
+                Workbook workbook = new Workbook();
+                Worksheet worksheet_plus = new Worksheet("+");
+                string query = "SELECT p.business_n " +
+                                 "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
+                                "WHERE l.deal_id = p.business_n " +
+                                  "AND a.contact_id = p.debtor_contact_id " +
+                                  "AND c.id = p.debtor_contact_id " +
+                                  "AND a.role = l.adr_type";
+                AddConditionsToQuery(ref query, minSum);
+                OracleDataReader reader = _con.GetReader(query);
+                worksheet_plus.Cells[0, 0] = new Cell("Пин");
+                int i = 0;
+                while (reader.Read())
                 {
-                    query = "SELECT p.business_n " +
-                              "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
-                             "WHERE l.deal_id = p.business_n " +
-                               "AND a.contact_id = p.debtor_contact_id " +
-                               "AND c.id = p.debtor_contact_id " +
-                               "AND a.role = l.adr_type " + 
-                               "AND " + item.Script;
-                    reader = _con.GetReader(query);
-                    worksheet_minus.Cells[0, 0] = new Cell("Пин");
-                    worksheet_minus.Cells[0, 1] = new Cell("Причина");
-                    i = 0;
-                    while (reader.Read())
-                    {
-                        i += 1;
-                        worksheet_minus.Cells[i, 0] = new Cell(reader[0].ToString());
-                        worksheet_minus.Cells[i, 1] = new Cell(item.Text);
-                    }
-                    reader.Close();
+                    i += 1;
+                    worksheet_plus.Cells[i, 0] = new Cell(reader[0].ToString());
                 }
-                workbook.Worksheets.Add(worksheet_minus);
-                workbook.Save(file);
-                System.Diagnostics.Process.Start(file);
+                reader.Close();
+                workbook.Worksheets.Add(worksheet_plus);
+
+                Worksheet worksheet_minus = new Worksheet("-");
+                worksheet_minus.Cells[0, 0] = new Cell("Пин");
+                worksheet_minus.Cells[0, 1] = new Cell("Причина");
+                List<Condition> checkedList = _listConditions.Where(c => c.IsChecked == true).ToList();
+                if (checkedList.Count > 0)
+                {
+                    i = 0;
+                    foreach (var item in checkedList)
+                    {
+                        query = "SELECT p.business_n " +
+                                  "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
+                                 "WHERE l.deal_id = p.business_n " +
+                                   "AND a.contact_id = p.debtor_contact_id " +
+                                   "AND c.id = p.debtor_contact_id " +
+                                   "AND a.role = l.adr_type " +
+                                   "AND " + item.Alternative;
+                        if (item.Text == "Сумма долга не мение (грн)")
+                        {
+                            query += " " + minSum;
+                        }
+                        reader = _con.GetReader(query);
+                        while (reader.Read())
+                        {
+                            i += 1;
+                            worksheet_minus.Cells[i, 0] = new Cell(reader[0].ToString());
+                            worksheet_minus.Cells[i, 1] = new Cell(item.Text);
+                            if (item.Text == "Сумма долга не мение (грн)")
+                            {
+                                worksheet_minus.Cells[i, 1] = new Cell("Сумма долга мение " + minSum + " грн.");
+                            }
+                        }
+                        reader.Close();
+                    }
+                    workbook.Worksheets.Add(worksheet_minus);
+                    workbook.Save(file);
+                    System.Diagnostics.Process.Start(file);
+                }
             }
+            catch (IOException)
+            {
+                MessageBox.Show("Похоже файл \"leters.xls\" уже используется. Закройте файл и повторите попытку.", "Ошибка доступа к файлу", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Похоже что-то пошло не так..." + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        static public bool IsExistPinsInTable()
+        {
+            bool res = false;
+            try
+            {
+                string query = "select count(*) from let_app t";
+                OracleDataReader reader = _con.GetReader(query);
+                int count = 0;
+                while (reader.Read())
+                {
+                    count = Convert.ToInt32(reader[0]);
+                }
+                reader.Close();
+                if (count > 0) res = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception from MyLetterManager.LetterManager.IsExistPinsInWork(). " + ex.Message);
+            }
+            return res;
         }
     }
 }
