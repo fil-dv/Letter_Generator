@@ -5,9 +5,6 @@ using Semaphore.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExcelLibrary.SpreadSheet;
 
@@ -155,7 +152,7 @@ namespace MyLetterManager
             return count;
         }
 
-        public static void CreateExcelReport(string path = @"d:\priority.xls")
+        public static void CreateExcelReport(string path = @"..\..\xls\priority.xls")
         {
             try
             {
@@ -183,16 +180,18 @@ namespace MyLetterManager
                     worksheet.Cells[i, 3] = new Cell(reader[3].ToString());
                     worksheet.Cells[i, 4] = new Cell(reader[4].ToString());
                 }
-                reader.Close();
-                workbook.Worksheets.Add(worksheet);
-                workbook.Save(file);
+                reader.Close();                
+
                 if (i == 0)
                 {
                     MessageBox.Show("Сегодня еще не было поднятий приоритетов дел. ", "Приоритеты");                    
                 }
                 else
                 {
-                    MessageBox.Show("Готово, путь к файлу отчета: " + path, "Excel отчет");
+                    workbook.Worksheets.Add(worksheet);
+                    workbook.Save(file);
+                    System.Diagnostics.Process.Start(file);
+                    //MessageBox.Show("Готово, путь к файлу отчета: " + path, "Excel отчет");
                 }
             }
             catch (IOException)

@@ -21,6 +21,7 @@ namespace WinFormsFace
     public partial class Form_main : Form
     {
         List<CheckBox> _checkBoxeslist = new List<CheckBox>();
+        bool _isConditionWithMinSumSelected = false;
 
         public Form_main()
         {
@@ -246,10 +247,27 @@ namespace WinFormsFace
                 CheckBox cb = sender as CheckBox;
                 if (cb.CheckState == CheckState.Checked)
                 {
+                    if (cb.Text == "Сумма долга не мение (грн)")
+                    {
+                        _isConditionWithMinSumSelected = true;
+                        if (textBox_summa.Text.Length < 1)
+                        {
+                            textBox_summa.Text = "300";
+                        }
+                    }
+
                     LetterManager.ChangeConditionUsing(cb.Name, true);
                 }
                 else
                 {
+                    if (cb.Text == "Сумма долга не мение (грн)")
+                    {
+                        _isConditionWithMinSumSelected = false;
+                        if (textBox_summa.Text.Length < 1)
+                        {
+                            textBox_summa.Text = "0";
+                        }
+                    }
                     LetterManager.ChangeConditionUsing(cb.Name, false);
                 }
                 RefreshToolStripPin();
@@ -339,7 +357,7 @@ namespace WinFormsFace
 
         void RefreshToolStripPin()
         {
-            int countForGenerate = LetterManager.GetPinCountToGenerate();
+            int countForGenerate = LetterManager.GetPinCountToGenerate(textBox_summa.Text.Length > 0? textBox_summa.Text : "0" );
             toolStripLabel_pins.Text = countForGenerate.ToString();
         }
 
@@ -486,6 +504,10 @@ namespace WinFormsFace
             {
                 textBox_summa.Text = textBox_summa.Text.Remove(textBox_summa.Text.Length - 1);
             }
+            if (_isConditionWithMinSumSelected)
+            {
+                RefreshToolStripPin();
+            }
         }
 
         private void priority_menuItem_Click(object sender, EventArgs e)
@@ -498,6 +520,11 @@ namespace WinFormsFace
         private void exitMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void button_menus_Click(object sender, EventArgs e)
+        {
+            LetterManager.CreateExcelReport(textBox_summa.Text.Length > 0 ? textBox_summa.Text : "0");
         }
     }
 }

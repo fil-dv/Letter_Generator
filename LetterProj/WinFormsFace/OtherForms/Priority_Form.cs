@@ -2,13 +2,7 @@
 using MyLetterManager.Repo;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinFormsFace.OtherForms
@@ -74,7 +68,6 @@ namespace WinFormsFace.OtherForms
                 button_upd_prior.Enabled = false;
             }
         }
-
 
         private void PriorityManager_FileLoadCompleted(bool obj)
         {   
