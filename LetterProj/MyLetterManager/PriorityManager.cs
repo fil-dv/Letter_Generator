@@ -151,8 +151,14 @@ namespace MyLetterManager
             reader.Close();
             return count;
         }
-
-        public static void CreateExcelReport(string path = @"..\..\xls\priority.xls")
+       
+        /// <summary>
+        /// Method for creating xls file with update priority report. 
+        /// </summary>
+        /// <param name="startDate">Range start date.</param>
+        /// <param name="stopDate">Range stop date.</param>
+        /// <param name="path">Path to save xls file. Has default value.</param>
+        public static void CreateExcelReport(string startDate, string stopDate, string path = @"..\..\xls\priority.xls")
         {
             try
             {
@@ -162,7 +168,7 @@ namespace MyLetterManager
 
                 string query = "select t.business_n, t.cred, t.reg, t.dt, t.priority " +
                                  "from REPORT.PRIORITY t " +
-                                "where trunc(t.dt) = trunc(sysdate)";
+                                "where trunc(t.dt) between to_date('" + startDate + "', 'DD/MM/YYYY') and to_date('" + stopDate + "', 'DD/MM/YYYY')";
                 OracleDataReader reader = _con.GetReader(query);
                 worksheet.Cells[0, 0] = new Cell("Пин");
                 worksheet.Cells[0, 1] = new Cell("Кредитор");
@@ -177,21 +183,21 @@ namespace MyLetterManager
                     worksheet.Cells[i, 0] = new Cell(reader[0].ToString());
                     worksheet.Cells[i, 1] = new Cell(reader[1].ToString());
                     worksheet.Cells[i, 2] = new Cell(reader[2].ToString());
-                    worksheet.Cells[i, 3] = new Cell(reader[3].ToString());
+                    DateTime date = Convert.ToDateTime(reader[3]);
+                    worksheet.Cells[i, 3] = new Cell(date.ToString("dd/MM/yyyy"));
                     worksheet.Cells[i, 4] = new Cell(reader[4].ToString());
                 }
                 reader.Close();                
 
                 if (i == 0)
                 {
-                    MessageBox.Show("Сегодня еще не было поднятий приоритетов дел. ", "Приоритеты");                    
+                    MessageBox.Show("За указанный период не было поднятий приоритетов дел. ", "Приоритеты");                    
                 }
                 else
                 {
                     workbook.Worksheets.Add(worksheet);
                     workbook.Save(file);
                     System.Diagnostics.Process.Start(file);
-                    //MessageBox.Show("Готово, путь к файлу отчета: " + path, "Excel отчет");
                 }
             }
             catch (IOException)

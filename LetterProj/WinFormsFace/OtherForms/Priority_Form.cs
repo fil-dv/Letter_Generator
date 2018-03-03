@@ -160,9 +160,18 @@ namespace WinFormsFace.OtherForms
 
         private void button_priority_report_Click(object sender, EventArgs e)
         {
-            //string pathToFolder = _pathToFile.Substring(0, _pathToFile.LastIndexOf("\\")) + "\\";
-            //PriorityManager.CreateExcelReport(pathToFolder);
-            PriorityManager.CreateExcelReport();
+            DateTime startDate = dateTimePicker1.Value.Date;
+            DateTime stopDate = dateTimePicker2.Value.Date;
+
+            int dif = stopDate.Day - startDate.Day;
+            if (dif < 0 || stopDate > DateTime.Now)
+            {
+                MessageBox.Show("Некорректный диапазон дат.", "Ooops...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            string start = startDate.ToString("dd/MM/yyyy");
+            string stop = stopDate.ToString("dd/MM/yyyy");
+            PriorityManager.CreateExcelReport(start, stop);
         }
     }
 }
