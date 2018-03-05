@@ -167,14 +167,18 @@ namespace WinFormsFace
            // comboBox_adr.SelectedIndex = 0;
         }
 
-        void ResetControls()
+        void ResetControls(bool isAdrChange = false)
         {
             this.Height = 271 + (LetterManager.GetConditionsList().Count * 24);
             LetterManager.ResetData();
             ClearCreditorsCombo();
             ClearRegsCombo();
             ClearReadyRegsCombo();
-            ClearAdrCombo();
+            if (!isAdrChange)
+            {
+                ClearAdrCombo();
+                InitAdrCombo();
+            }
             ClearTemplateCombo();
             toolStripLabel_pins.Text = "0";
             toolStrip_template.Text = "";
@@ -183,10 +187,10 @@ namespace WinFormsFace
             button_remove_reg.Enabled = false;
             button_letter_report.Enabled = false;
             button_to_generate.Enabled = false;
-            InitAdrCombo();
             InitCreditorsCombo();
             InitTemplateCombo();
             InitConditions();
+            textBox_summa.Text = "0";
             button_load_file.Enabled = false;
             comboBox_creditors.Enabled = false;
             comboBox_regs.Enabled = false;
@@ -393,6 +397,7 @@ namespace WinFormsFace
 
         private void comboBox_adr_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ResetControls(true);
             CheckControlsEnables();
             if (comboBox_adr.Text.Length > 1)
             {

@@ -401,7 +401,7 @@ namespace MyLetterManager
                             break;
                         default:
                             MessageBox.Show("Некорректный тип адреса.");
-                            break;
+                            return;
                     }
                 }
             }
@@ -450,7 +450,7 @@ namespace MyLetterManager
                 string file = path;
                 Workbook workbook = new Workbook();
                 Worksheet worksheet_plus = new Worksheet("+");
-                string query = "SELECT p.business_n " +
+                string query = "SELECT p.business_n, decode(l.adr_type, 1, 'АП', 2, 'АВР', 3, 'АФ', 4, 'Рабочий') adr " +
                                  "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
                                 "WHERE l.deal_id = p.business_n " +
                                   "AND a.contact_id = p.debtor_contact_id " +
@@ -459,25 +459,29 @@ namespace MyLetterManager
                 AddConditionsToQuery(ref query, minSum);
                 OracleDataReader reader = _con.GetReader(query);
                 worksheet_plus.Cells[0, 0] = new Cell("Пин");
+                worksheet_plus.Cells[0, 1] = new Cell("Тип адреса");
                 int i = 0;
                 while (reader.Read())
                 {
                     i += 1;
                     worksheet_plus.Cells[i, 0] = new Cell(reader[0].ToString());
+                    worksheet_plus.Cells[i, 1] = new Cell(reader[1].ToString());
                 }
                 reader.Close();
                 workbook.Worksheets.Add(worksheet_plus);
 
                 Worksheet worksheet_minus = new Worksheet("-");
                 worksheet_minus.Cells[0, 0] = new Cell("Пин");
-                worksheet_minus.Cells[0, 1] = new Cell("Причина");
+                worksheet_minus.Cells[0, 1] = new Cell("Тип адреса");
+                worksheet_minus.Cells[0, 2] = new Cell("Причина");
+                
                 List<Condition> checkedList = _listConditions.Where(c => c.IsChecked == true).ToList();
                 if (checkedList.Count > 0)
                 {
                     i = 0;
                     foreach (var item in checkedList)
                     {
-                        query = "SELECT p.business_n " +
+                        query = "SELECT p.business_n, decode(l.adr_type, 1, 'АП', 2, 'АВР', 3, 'АФ', 4, 'Рабочий') adr " +
                                   "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
                                  "WHERE l.deal_id = p.business_n " +
                                    "AND a.contact_id = p.debtor_contact_id " +
@@ -493,7 +497,10 @@ namespace MyLetterManager
                         {
                             i += 1;
                             worksheet_minus.Cells[i, 0] = new Cell(reader[0].ToString());
-                            worksheet_minus.Cells[i, 1] = new Cell(item.Text);
+                            worksheet_minus.Cells[i, 1] = new Cell(reader[1].ToString());
+                            worksheet_minus.Cells[i, 2] = new Cell(item.Text);
+                            
+
                             if (item.Text == "Сумма долга не мение (грн)")
                             {
                                 worksheet_minus.Cells[i, 1] = new Cell("Сумма долга мение " + minSum + " грн.");
