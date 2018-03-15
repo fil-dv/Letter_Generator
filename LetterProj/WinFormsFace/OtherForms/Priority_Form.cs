@@ -1,4 +1,5 @@
 ﻿using MyLetterManager;
+using MyLetterManager.Infrastructure;
 using MyLetterManager.Repo;
 using System;
 using System.Collections.Generic;
@@ -136,6 +137,7 @@ namespace WinFormsFace.OtherForms
                 catch (Exception ex)
                 {
                     MessageBox.Show("Не удается прочитать файл. " + ex.Message);
+                    PriorityLoger.AddRecordToLog("Не удается прочитать файл. " + ex.Message);
                 }
             }
         }

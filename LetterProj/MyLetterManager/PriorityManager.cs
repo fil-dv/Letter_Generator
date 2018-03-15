@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using ExcelLibrary.SpreadSheet;
-
+using MyLetterManager.Infrastructure;
 
 namespace MyLetterManager
 {
@@ -47,26 +47,41 @@ namespace MyLetterManager
 
         static public void AddPinFromFile(List<Deal> insertList)
         {
-
-            using (FileStream fs = new FileStream(@"Imp.csv", FileMode.Create))
-            using (StreamWriter sw = new StreamWriter(fs))
+            try
             {
-                foreach (var item in insertList)
+                using (FileStream fs = new FileStream(@"Imp.csv", FileMode.Create))
+                using (StreamWriter sw = new StreamWriter(fs))
                 {
-                    sw.WriteLine(item.DealId);
+                    foreach (var item in insertList)
+                    {
+                        sw.WriteLine(item.DealId);
+                    }
                 }
+                InsertToDbByBatFile();                
             }
-            InsertToDbByBatFile();
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка чтения файла, попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PriorityLoger.AddRecordToLog("Не удается прочитать файл. " + ex.Message);
+            }            
         }
 
         private static void InsertToDbByBatFile()
         {
-            System.Diagnostics.Process proc = new System.Diagnostics.Process();
-            proc.Exited += new EventHandler(FileLoaded);
-            proc.StartInfo.CreateNoWindow = true;
-            proc.StartInfo.FileName = @"1_IMPORT.BAT";
-            proc.EnableRaisingEvents = true;
-            proc.Start();
+            try
+            {
+                System.Diagnostics.Process proc = new System.Diagnostics.Process();
+                proc.Exited += new EventHandler(FileLoaded);
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.FileName = @"1_IMPORT.BAT";
+                proc.EnableRaisingEvents = true;
+                proc.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка записи данных в базу, попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PriorityLoger.AddRecordToLog("Ошибка записи данных в базу. " + ex.Message);
+            }            
         }
 
         static void FileLoaded(object sender, EventArgs e)
@@ -80,8 +95,9 @@ namespace MyLetterManager
         public static int CheckUpdatePriority(string priorityValue)
         {
             int count = -1;
-
-            string query = "select count(p.id) " +
+            try
+            {
+                string query = "select count(p.id) " +
                              "from SUVD.SCHEDULED_TODO_ITEMS s, " +
                                    "suvd.projects p, " +
                                    "suvd.contacts c, " +
@@ -95,18 +111,57 @@ namespace MyLetterManager
                                                      "from LET_APP t, suvd.projects p " +
                                                     "where p.business_n = t.deal_id) " +
                               "and s.priority_value < " + priorityValue;
-            OracleDataReader reader = _con.GetReader(query);
-            while (reader.Read())
-            {
-                count = Convert.ToInt32(reader[0]);
+                OracleDataReader reader = _con.GetReader(query);
+                while (reader.Read())
+                {
+                    count = Convert.ToInt32(reader[0]);
+                }
+                reader.Close();
             }
-            reader.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка соединения с базой данных, попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PriorityLoger.AddRecordToLog("Ошибка соединения с базой данных. " + ex.Message);
+            }
             return count;
         }
 
         public static void UpdatePriority(string priorityValue)
         {
-            string query = "insert into report.priority " +
+            InsertIntoReportPriority(priorityValue);
+            UpdateScheduledTodoItems(priorityValue);               
+        }
+
+        private static void UpdateScheduledTodoItems(string priorityValue)
+        {
+            try
+            {
+                string query = "update SUVD.SCHEDULED_TODO_ITEMS s " +
+                                  "set s.priority_value =  " + priorityValue +
+                               " where s.project_id in (select p.id " +
+                                 "from report.IMP_PRIOR t, suvd.projects p " +
+                                "where p.business_n = t.deal_id) " +
+                                  "and s.priority_value < " + priorityValue;
+
+                _con.ExecCommand(query);
+
+                if (UpdatePriorityCompleted != null)
+                {
+                    UpdatePriorityCompleted(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Возникла ошибка при апдейте таблицы SCHEDULED_TODO_ITEMS, приоритет поднят не был, попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PriorityLoger.AddRecordToLog("Возникла ошибка при апдейте таблицы SCHEDULED_TODO_ITEMS, приоритет поднят не был. " + ex.Message);
+            }
+        }
+
+        private static void InsertIntoReportPriority(string priorityValue)
+        {
+            try
+            {
+                string query = "insert into report.priority " +
                                 "select p.business_n, " +
                                         "c.inn, " +
                                         "cr.id cred4, " +
@@ -128,11 +183,12 @@ namespace MyLetterManager
                                                            "from LET_APP t, suvd.projects p " +
                                                           "where p.business_n = t.deal_id) " +
                                     "and s.priority_value < " + priorityValue;
-             _con.ExecCommand(query);
-
-            if (UpdatePriorityCompleted != null)
+                _con.ExecCommand(query);                
+            }
+            catch (Exception ex)
             {
-                UpdatePriorityCompleted(true);
+                MessageBox.Show("Возникла ошибка при записи в таблицу report.priority,  попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PriorityLoger.AddRecordToLog("Возникла ошибка при записи в таблицу report.priority. " + ex.Message);
             }
         }
 
@@ -158,11 +214,11 @@ namespace MyLetterManager
         /// <param name="startDate">Range start date.</param>
         /// <param name="stopDate">Range stop date.</param>
         /// <param name="path">Path to save xls file. Has default value.</param>
-        public static void CreateExcelReport(string startDate, string stopDate, string path = @"..\..\xls\priority.xls")
+        public static void CreateExcelReport(string startDate, string stopDate)
         {
             try
             {
-                string file = path;
+                string file = AppSettings.PathToXls;
                 Workbook workbook = new Workbook();
                 Worksheet worksheet = new Worksheet("Priority_report");
 

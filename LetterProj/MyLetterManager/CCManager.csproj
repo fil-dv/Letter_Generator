@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Infrastructure\PriorityLoger.cs" />
     <Compile Include="LetterManager.cs" />
     <Compile Include="Mediator\Mediator.cs" />
     <Compile Include="PriorityManager.cs" />

@@ -1,0 +1,6 @@
+15.03.2018 17:21:18 D.Filonenko
+Hello world
+15.03.2018 17:23:27 D.Filonenko
+Hello world
+15.03.2018 17:33:38 D.Filonenko
+Input string was not in a correct format.

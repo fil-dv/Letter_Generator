@@ -24,5 +24,14 @@ namespace Semaphore.Infrastructure.Settings
         //static string _dbConnectionString = "User ID=import_user;password=sT7hk9Lm;Data Source=CD_WORK";
         static string _dbConnectionString = "User ID=report;password=report;Data Source=CD_WORK";
         public static string DbConnectionString { get { return _dbConnectionString; } set { _dbConnectionString = value; } }
+
+        static string _pathToXls = @"..\..\xls\priority.xls";
+        public static string PathToXls { get { return _pathToXls; } set { _pathToXls = value; } }
+
+        static string _pathToPriorityLog = @"..\\..\\log\\log_priority.txt";
+        public static string PathToPriorityLog { get { return _pathToPriorityLog; } set { _pathToPriorityLog = value; } }
+
+        static string _pathToLetterLog = @"..\\..\\log\\log_letter.txt";
+        public static string PathToLetterLog { get { return _pathToLetterLog; } set { _pathToLetterLog = value; } }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MyLetterManager;
+using MyLetterManager.Infrastructure;
 using MyLetterManager.Mediator;
 using MyLetterManager.Repo;
 using System;
@@ -27,6 +28,7 @@ namespace WinFormsFace
         {
             InitHendlers();
             InitializeComponent();
+            this.Icon = Properties.Resources.Icon1;
             LetterManager.CreateConnect();
             FillCheckBoxList();
             ResetControls();
@@ -511,14 +513,21 @@ namespace WinFormsFace
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Не удается прочитать файл. " + ex.Message);
+                    MessageBox.Show("Не удается прочитать файл. " + ex.Message);                   
                 }
             }               
         }
 
         private void LetterManager_FileLoadCompleted(bool obj)
         {
-            RefreshToolStripPin();
+            try
+            {
+                RefreshToolStripPin();
+            }
+            catch (Exception)
+            {
+                throw;
+            }            
         }
 
         private bool CheckReadyToLoadData()

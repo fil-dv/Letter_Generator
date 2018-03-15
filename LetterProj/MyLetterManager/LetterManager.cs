@@ -486,8 +486,8 @@ namespace MyLetterManager
                                  "WHERE l.deal_id = p.business_n " +
                                    "AND a.contact_id = p.debtor_contact_id " +
                                    "AND c.id = p.debtor_contact_id " +
-                                   "AND a.role = l.adr_type " +
-                                   "AND " + item.Alternative;
+                                   "AND a.role = l.adr_type ";
+                        query += (" AND " + item.Alternative);
                         if (item.Text == "Сумма долга не мение (грн)")
                         {
                             query += " " + minSum;
@@ -498,12 +498,11 @@ namespace MyLetterManager
                             i += 1;
                             worksheet_minus.Cells[i, 0] = new Cell(reader[0].ToString());
                             worksheet_minus.Cells[i, 1] = new Cell(reader[1].ToString());
-                            worksheet_minus.Cells[i, 2] = new Cell(item.Text);
-                            
+                            worksheet_minus.Cells[i, 2] = new Cell(item.Text);                            
 
                             if (item.Text == "Сумма долга не мение (грн)")
                             {
-                                worksheet_minus.Cells[i, 1] = new Cell("Сумма долга мение " + minSum + " грн.");
+                                worksheet_minus.Cells[i, 2] = new Cell("Сумма долга мение " + minSum + " грн.");
                             }
                         }
                         reader.Close();
