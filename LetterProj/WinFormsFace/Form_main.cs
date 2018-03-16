@@ -117,6 +117,8 @@ namespace WinFormsFace
             comboBox_regs.AutoCompleteSource = AutoCompleteSource.ListItems;
             decimal creditorId = LetterManager.GetCreditorIdByTrimedAlias(comboBox_creditors.SelectedItem.ToString());
             List<Reg> regList = LetterManager.GetRegListByCreditorId(creditorId);
+            Mediator.RegList = regList;
+
             foreach (var item in regList)
             {
                 comboBox_regs.Items.Add(item.Name + ", ID - " + item.Id);
@@ -128,8 +130,9 @@ namespace WinFormsFace
             if (comboBox_creditors.Text.Length > 0)
             {
                 button_load_file.Enabled = false;
-                comboBox_regs.Enabled = true;
-                comboBox_ready_regs.Enabled = true;
+                // comboBox_regs.Enabled = true;
+                // comboBox_ready_regs.Enabled = true;
+                InitRegForm();
             }
             else
             {
@@ -140,12 +143,15 @@ namespace WinFormsFace
         }
 
         private void InitRegForm()
-        {
+        {            
+            Mediator.CurrentCreditor = comboBox_creditors.Text;
+            decimal creditorId = LetterManager.GetCreditorIdByTrimedAlias(comboBox_creditors.SelectedItem.ToString());
+            Mediator.RegList = LetterManager.GetRegListByCreditorId(creditorId); 
             Form_regs fr = new Form_regs();
-            fr.FormBorderStyle = FormBorderStyle.FixedDialog;
-            fr.MaximizeBox = false;
-            fr.MinimizeBox = false;
-            fr.StartPosition = FormStartPosition.CenterScreen;
+            //fr.FormBorderStyle = FormBorderStyle.FixedDialog;
+            //fr.MaximizeBox = false;
+            //fr.MinimizeBox = false;
+            //fr.StartPosition = FormStartPosition.CenterScreen;
             fr.ShowDialog();
         }
 
@@ -354,7 +360,6 @@ namespace WinFormsFace
                 record.AdrType = adrtype;
                 record.TemplateId = template;
                 LetterManager.ChangeRegForGenerate(record, Operation.Insert);
-                //RefreshToolStripPin();
                 comboBox_ready_regs.Items.Add(regName);
                 comboBox_regs.Items.Remove(regName);
                 comboBox_regs.Text = "";

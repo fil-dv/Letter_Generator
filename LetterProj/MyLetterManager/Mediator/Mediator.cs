@@ -12,6 +12,10 @@ namespace MyLetterManager.Mediator
         static string _currentCreditor = "";
         public static string CurrentCreditor { get { return _currentCreditor; } set { _currentCreditor = value; } } 
 
+        static public decimal CreditorId { get; set; } 
+
+        static public List<Reg> RegList { get; set; }
+
         public static string DealsCount { get; set; }
     }
 }

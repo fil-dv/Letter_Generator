@@ -15,37 +15,125 @@ namespace WinFormsFace.OtherForms
 {
     public partial class Form_regs : Form
     {
+        Button _button_add_regs = new Button();
+        List<CheckBox> _checkBoxeslist = new List<CheckBox>();
         public Form_regs()
-        {
+        {            
             InitializeComponent();
+            SetUpForm();
             if (Mediator.CurrentCreditor != null)
             {
                 this.Text = Mediator.CurrentCreditor;
             }
-            InitListView();            
+            // InitListView();  
+            InitButton();            
+            FeellCheckBoxList();
+            InitConditions();
         }
 
-        private void InitListView()
+        private void InitButton()
         {
-            listBox_regs.Location = new Point(10, 20);
-            listBox_regs.Width = this.Width - 36;
+            this.Controls.Add(_button_add_regs);
+            _button_add_regs.Text = "Ok";
+            _button_add_regs.Enabled = false;
+        }
 
-            decimal creditorId = LetterManager.GetCreditorIdByTrimedAlias(Mediator.CurrentCreditor);
-            List<Reg> regList = LetterManager.GetRegListByCreditorId(creditorId);
-
-            listBox_regs.Height = regList.Count * 13 + 20;
-            if (listBox_regs.Height > 450)
+        private void FeellCheckBoxList()
+        {            
+            try
             {
-               // listBox_regs.scr = true;
+                
+                for (int i = 0; i < Mediator.RegList.Count; i++)
+                {
+                    CheckBox cb = new CheckBox();
+                    cb.Left = 10;
+                    cb.Top = 10 + (i * 24);
+                    cb.Width = this.Width - 95;
+                    _checkBoxeslist.Add(cb);
+                }
+                CreateHandlers();                             
             }
-            this.Height = listBox_regs.Height + 150;
-            button_add_regs.Location = new Point(270, listBox_regs.Height + 50);
-
-            foreach (var item in regList)
+            catch (Exception ex)
             {
-                listBox_regs.Items.Add(item.Name + ", ID - " + item.Id);
+                MessageBox.Show("Exception from WinFormsFace.OtherForms.Form_regs.InitCheckBoxList() " + ex.Message);
+
             }
         }
+
+        private void SetUpForm()
+        {     
+            this.Height = Mediator.RegList.Count * 24;
+
+            if (this.Height >= 500)
+            {
+                this.VerticalScroll.Enabled = true;               
+            }
+            _button_add_regs.Width = 70;
+            _button_add_regs.Left = this.Width - 100;
+            _button_add_regs.Top = (int)(this.Height * 0.1); ;
+            _button_add_regs.Height = (int)(this.Height * 0.9);   
+        }
+
+        void InitConditions()
+        {
+            List<Reg> regList = Mediator.RegList;
+            try
+            {
+                for (int i = 0; i < regList.Count; i++)
+                {
+                    _checkBoxeslist[i].Text = "ID = " + regList[i].Id + ", " + regList[i].Name;
+                    _checkBoxeslist[i].Name = regList[i].Id.ToString();
+                    this.Controls.Add(_checkBoxeslist[i]);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception from WinFormsFace.Form_main.InitConditions() " + ex.Message);
+            }
+        }
+
+        private void CreateHandlers()
+        {
+            try
+            {
+                foreach (var item in _checkBoxeslist)
+                {
+                    item.CheckStateChanged += Item_CheckStateChanged; 
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception from WinFormsFace.OtherForms.Form_regs.CreateHandlers() " + ex.Message);
+            }
+        }
+
+        private void Item_CheckStateChanged(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        //private void InitListView()
+        //{
+        //    listBox_regs.Location = new Point(10, 20);
+        //    listBox_regs.Width = this.Width - 36;
+
+        //    decimal creditorId = LetterManager.GetCreditorIdByTrimedAlias(Mediator.CurrentCreditor);
+        //    List<Reg> regList = LetterManager.GetRegListByCreditorId(creditorId);
+
+        //    listBox_regs.Height = regList.Count * 13 + 20;
+        //    if (listBox_regs.Height > 450)
+        //    {
+        //       // listBox_regs.scr = true;
+        //    }
+        //    this.Height = listBox_regs.Height + 150;
+        //    button_add_regs.Location = new Point(270, listBox_regs.Height + 50);
+
+        //    foreach (var item in regList)
+        //    {
+        //        listBox_regs.Items.Add(item.Name + ", ID - " + item.Id);
+        //    }
+        //}
 
         //private void button_add_regs_Click(object sender, EventArgs e)
         //{
