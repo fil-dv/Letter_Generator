@@ -15,8 +15,11 @@ namespace WinFormsFace.OtherForms
 {
     public partial class Form_regs : Form
     {
+
+        static public event Action<bool> RegisrersSelected;
         Button _button_add_regs = new Button();
         List<CheckBox> _checkBoxeslist = new List<CheckBox>();
+
         public Form_regs()
         {            
             InitializeComponent();
@@ -28,7 +31,7 @@ namespace WinFormsFace.OtherForms
             // InitListView();  
             InitButton();            
             FeellCheckBoxList();
-            InitConditions();
+            InitRegs();
         }
 
         private void InitButton()
@@ -41,8 +44,7 @@ namespace WinFormsFace.OtherForms
         private void FeellCheckBoxList()
         {            
             try
-            {
-                
+            {                
                 for (int i = 0; i < Mediator.RegList.Count; i++)
                 {
                     CheckBox cb = new CheckBox();
@@ -56,7 +58,6 @@ namespace WinFormsFace.OtherForms
             catch (Exception ex)
             {
                 MessageBox.Show("Exception from WinFormsFace.OtherForms.Form_regs.InitCheckBoxList() " + ex.Message);
-
             }
         }
 
@@ -74,7 +75,7 @@ namespace WinFormsFace.OtherForms
             _button_add_regs.Height = (int)(this.Height * 0.9);   
         }
 
-        void InitConditions()
+        void InitRegs()
         {
             List<Reg> regList = Mediator.RegList;
             try
@@ -100,17 +101,47 @@ namespace WinFormsFace.OtherForms
                 {
                     item.CheckStateChanged += Item_CheckStateChanged; 
                 }
+                _button_add_regs.Click += _button_add_regs_Click;
 
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Exception from WinFormsFace.OtherForms.Form_regs.CreateHandlers() " + ex.Message);
             }
+        }        
+        
+
+        private void _button_add_regs_Click(object sender, EventArgs e)
+        {
+            List<CheckBox> list = _checkBoxeslist.Where(c => c.Checked == true).ToList();
+            if (list.Count > 0)
+            {
+                List<Reg> regList = new List<Reg>();
+                foreach (var item in list)
+                {
+                    Reg reg = new Reg { Id = Convert.ToDecimal(item.Name) };
+                    regList.Add(reg);                    
+                }
+                Mediator.SelectedRegList = regList;
+                if (RegisrersSelected != null)
+                {
+                    RegisrersSelected(true);
+                }
+            }
+            this.Close();           
         }
 
         private void Item_CheckStateChanged(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            List<CheckBox> list = _checkBoxeslist.Where(c => c.Checked == true).ToList();
+            if (list.Count > 0)
+            {
+                _button_add_regs.Enabled = true;
+            }
+            else
+            {
+                _button_add_regs.Enabled = false;
+            }
         }
 
         //private void InitListView()

@@ -16,6 +16,8 @@ namespace MyLetterManager.Mediator
 
         static public List<Reg> RegList { get; set; }
 
+        static public List<Reg> SelectedRegList { get; set; }
+
         public static string DealsCount { get; set; }
     }
 }

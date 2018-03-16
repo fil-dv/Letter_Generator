@@ -38,6 +38,14 @@ namespace WinFormsFace
         private void InitHendlers()
         {
             LetterManager.FileLoadCompleted += LetterManager_FileLoadCompleted;
+            Form_regs.RegisrersSelected += Form_regs_RegisrersSelected;
+        }
+
+        private void Form_regs_RegisrersSelected(bool obj)
+        {
+            List<Reg> rList = Mediator.SelectedRegList;
+            MessageBox.Show("Выбрано " + rList.Count + " реестров.");
+            // Залить реестры в базу 
         }
 
         private void SetTextBoxSumSettings()
