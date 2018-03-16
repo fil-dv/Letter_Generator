@@ -67,7 +67,9 @@ namespace WinFormsFace.OtherForms
 
             if (this.Height >= 500)
             {
-                this.VerticalScroll.Enabled = true;               
+                this.AutoScroll = true;
+                this.VerticalScroll.Enabled = true;
+                this.VerticalScroll.Visible = true;                               
             }
             _button_add_regs.Width = 70;
             _button_add_regs.Left = this.Width - 100;
