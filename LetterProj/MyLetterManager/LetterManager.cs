@@ -25,6 +25,26 @@ namespace MyLetterManager
         static public List<LetterTemplate> _templateList = new List<LetterTemplate>();
         static public List<Condition> _listConditions = new List<Condition>();
 
+        static string GetQuery(int id)
+        {
+            string res = "empty";
+            try
+            {
+                string query = "select t.query from report.let_queries t where t.id = " + id;
+                OracleDataReader reader = _con.GetReader(query);
+                while (reader.Read())
+                {
+                    res = reader[0].ToString();
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception from MyLetterManager.LetterManager.GetQuery()" + ex.Message); 
+            }
+            return res;
+        }
+
         static public void ResetData()
         {
             _creditorList.Clear();
@@ -37,7 +57,7 @@ namespace MyLetterManager
 
         private static void TruncateTable()
         {
-            string query = "truncate table let_app";
+            string query = GetQuery(3); // "truncate table let_app";
             _con.ExecCommand(query);
         }
 
@@ -99,7 +119,7 @@ namespace MyLetterManager
             {
                  _creditorList.Clear();
 
-                string query = "select distinct cr.id, cr.name from suvd.creditors cr, suvd.creditor_dogovors cd where cr.id = cd.creditor_id  and trunc(cd.stop_date) > trunc(sysdate)";
+                string query = GetQuery(1); // "select distinct cr.id, cr.name from suvd.creditors cr, suvd.creditor_dogovors cd where cr.id = cd.creditor_id  and (trunc(cd.stop_date) > trunc(sysdate) or cd.stop_date is null)";
                 OracleDataReader reader = _con.GetReader(query);
                 while (reader.Read())
                 {
@@ -125,7 +145,7 @@ namespace MyLetterManager
             {
                 _templateList.Clear();
 
-                string query = "select distinct t.id, t.name from suvd.templates t";
+                string query = GetQuery(4);  // "select distinct t.id, t.name from suvd.templates t";
                 OracleDataReader reader = _con.GetReader(query);
                 while (reader.Read())
                 {
@@ -164,7 +184,7 @@ namespace MyLetterManager
             {
                 _creditorRegsList.Clear();
 
-                string query = "select cd.id, cd.d_number from suvd.creditor_dogovors cd where cd.creditor_id = " + id + " and trunc(cd.stop_date) > trunc(sysdate) ";
+                string query = GetQuery(2) + id + GetQuery(21); // "select cd.id, cd.d_number from suvd.creditor_dogovors cd where cd.creditor_id = " + id + " and (trunc(cd.stop_date) > trunc(sysdate) or cd.stop_date is null)";
                 OracleDataReader reader = _con.GetReader(query);
                 while (reader.Read())
                 {
@@ -217,12 +237,14 @@ namespace MyLetterManager
         }
 
         private static void WritePinsToFile(RecordToInsert record)
-        {            
+        {
+            SetCtlFile();
             File.WriteAllText("Imp.csv", String.Empty);
 
             if (DataToGenerate.RegList.Count > 0)
             {
-                string query = "SELECT t.business_n FROM SUVD.PROJECTS t WHERE t.dogovor_id in ( " + GetRegsStr() + ")";
+                string query = GetQuery(14) + GetRegsStr() + ")";
+                // "SELECT t.business_n FROM SUVD.PROJECTS t WHERE t.dogovor_id in ( " + GetRegsStr() + ")";
                 OracleDataReader reader = _con.GetReader(query);
                 List<RecordToInsert> recList = new List<RecordToInsert>();
                 while (reader.Read())
@@ -261,16 +283,17 @@ namespace MyLetterManager
             List<Condition> checkedList = _listConditions.Where(c => c.IsChecked == true).ToList();
             if (checkedList.Count == 0)
             {
-                query = "select count(*) from LET_APP";
+                query = GetQuery(5);  // "select count(*) from LET_APP";
             }
             else
             {
-                query = "SELECT count(*) " + 
-                          "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
-                         "WHERE l.deal_id = p.business_n " + 
-                           "AND a.contact_id = p.debtor_contact_id " +
-                           "AND c.id = p.debtor_contact_id " +
-                           "AND a.role = l.adr_type";
+                query = GetQuery(6);
+                        //"SELECT count(*) " + 
+                        //  "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
+                        // "WHERE l.deal_id = p.business_n " + 
+                        //   "AND a.contact_id = p.debtor_contact_id " +
+                        //   "AND c.id = p.debtor_contact_id " +
+                        //   "AND a.role = l.adr_type";
                 AddConditionsToQuery(ref query, minSum);
             }
             OracleDataReader reader = _con.GetReader(query);
@@ -302,7 +325,7 @@ namespace MyLetterManager
         static public List<Condition> GetConditionsList()
         {
             _listConditions.Clear();
-            string query = "select t.id, t.description, t.script, t.is_used, t.alternative from LETTERS_CONDITIONS t";
+            string query = GetQuery(7);  // "select t.id, t.description, t.script, t.is_used, t.alternative from LETTERS_CONDITIONS t";
             OracleDataReader reader = _con.GetReader(query);
             while (reader.Read())
             {
@@ -330,7 +353,7 @@ namespace MyLetterManager
         static public int GetCountInQueueToGeneration()
         {
             int count = -1;
-            string query = "select count(*) from SUVD.LETTER_QUEUE t where t.status = 0";
+            string query = GetQuery(8); // "select count(*) from SUVD.LETTER_QUEUE t where t.status = 0";
             OracleDataReader reader = _con.GetReader(query);
             while (reader.Read())
             {                
@@ -343,7 +366,8 @@ namespace MyLetterManager
         static public string GetTemplateName(string templateId)
         {
             string templateName = "";
-            string query = "select t.name, length(t.name) from SUVD.TEMPLATES t where t.id = " + templateId;
+            string query = GetQuery(9) + templateId;
+            // "select t.name, length(t.name) from SUVD.TEMPLATES t where t.id = " + templateId;
             OracleDataReader reader = _con.GetReader(query);
             while (reader.Read())
             {
@@ -430,32 +454,34 @@ namespace MyLetterManager
 
         private static void UpdateAddAdress()
         {
-            string query = "UPDATE LET_APP t " +
-                              "SET t.adr = " +
-                          "(SELECT ca.zip_code || ', ' || ca.region || ', ' || ca.city || ', ' || ca.street " +
-                             "FROM SUVD.PROJECTS p, suvd.contact_address ca " +
-                            "WHERE t.deal_id = p.business_n " +
-                              "AND t.adr_type = ca.role " +
-                              "AND p.debtor_contact_id = ca.contact_id " +
-                              "AND ca.zip_code is not null)";
+            string query = GetQuery(10);
+                          // "UPDATE LET_APP t " +
+                          //    "SET t.adr = " +
+                          //"(SELECT ca.zip_code || ', ' || ca.region || ', ' || ca.city || ', ' || ca.street " +
+                          //   "FROM SUVD.PROJECTS p, suvd.contact_address ca " +
+                          //  "WHERE t.deal_id = p.business_n " +
+                          //    "AND t.adr_type = ca.role " +
+                          //    "AND p.debtor_contact_id = ca.contact_id " +
+                          //    "AND ca.zip_code is not null)";
             _con.ExecCommand(query);
           //  query = "delete from LET_APP t WHERE t.adr is null";
           //  _con.ExecCommand(query);
         }
         
-        static public void CreateExcelReport(string minSum, string path = @"..\..\xls\leters.xls")
+        static public void CreateExcelReport(string minSum, string path = @"leters.xls")
         {
             try
             {
                 string file = path;
                 Workbook workbook = new Workbook();
                 Worksheet worksheet_plus = new Worksheet("+");
-                string query = "SELECT p.business_n, decode(l.adr_type, 1, 'АП', 2, 'АВР', 3, 'АФ', 4, 'Рабочий') adr " +
-                                 "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
-                                "WHERE l.deal_id = p.business_n " +
-                                  "AND a.contact_id = p.debtor_contact_id " +
-                                  "AND c.id = p.debtor_contact_id " +
-                                  "AND a.role = l.adr_type";
+                string query = GetQuery(11);
+                               //"SELECT p.business_n, decode(l.adr_type, 1, 'АП', 2, 'АВР', 3, 'АФ', 4, 'Рабочий') adr " +
+                               //  "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
+                               // "WHERE l.deal_id = p.business_n " +
+                               //   "AND a.contact_id = p.debtor_contact_id " +
+                               //   "AND c.id = p.debtor_contact_id " +
+                               //   "AND a.role = l.adr_type";
                 AddConditionsToQuery(ref query, minSum);
                 OracleDataReader reader = _con.GetReader(query);
                 worksheet_plus.Cells[0, 0] = new Cell("Пин");
@@ -481,12 +507,13 @@ namespace MyLetterManager
                     i = 0;
                     foreach (var item in checkedList)
                     {
-                        query = "SELECT p.business_n, decode(l.adr_type, 1, 'АП', 2, 'АВР', 3, 'АФ', 4, 'Рабочий') adr " +
-                                  "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
-                                 "WHERE l.deal_id = p.business_n " +
-                                   "AND a.contact_id = p.debtor_contact_id " +
-                                   "AND c.id = p.debtor_contact_id " +
-                                   "AND a.role = l.adr_type ";
+                        query = GetQuery(12);
+                                //"SELECT p.business_n, decode(l.adr_type, 1, 'АП', 2, 'АВР', 3, 'АФ', 4, 'Рабочий') adr " +
+                                //  "FROM let_app l, suvd.projects p, suvd.contact_address a, suvd.contacts c " +
+                                // "WHERE l.deal_id = p.business_n " +
+                                //   "AND a.contact_id = p.debtor_contact_id " +
+                                //   "AND c.id = p.debtor_contact_id " +
+                                //   "AND a.role = l.adr_type ";
                         query += (" AND " + item.Alternative);
                         if (item.Text == "Сумма долга не мение (грн)")
                         {
@@ -527,7 +554,7 @@ namespace MyLetterManager
             bool res = false;
             try
             {
-                string query = "select count(*) from let_app t";
+                string query = GetQuery(13);  // "select count(*) from let_app t";
                 OracleDataReader reader = _con.GetReader(query);
                 int count = 0;
                 while (reader.Read())
@@ -542,6 +569,26 @@ namespace MyLetterManager
                 MessageBox.Show("Exception from MyLetterManager.LetterManager.IsExistPinsInWork(). " + ex.Message);
             }
             return res;
+        }
+
+        private static void SetCtlFile()
+        {
+            string text = "LOAD DATA " + Environment.NewLine +
+                          "INFILE 'imp.csv' " + Environment.NewLine +
+                          "REPLACE " + Environment.NewLine +
+                          "INTO TABLE \"LET_APP\" " + Environment.NewLine +
+                          "FIELDS TERMINATED BY ';' " + Environment.NewLine +
+                          "TRAILING NULLCOLS " + Environment.NewLine +
+                          "( " + Environment.NewLine +
+                          "deal_id, " + Environment.NewLine +
+                          "template, " + Environment.NewLine +
+                          "adr_type, " + Environment.NewLine +
+                          "comment1, " + Environment.NewLine +
+                          "comment2, " + Environment.NewLine +
+                          "comment3, " + Environment.NewLine +
+                          "adr, " + Environment.NewLine +
+                          ")";
+            File.WriteAllText("1_import.CTL", text);
         }
     }
 }

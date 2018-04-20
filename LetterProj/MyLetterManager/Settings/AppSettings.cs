@@ -25,7 +25,8 @@ namespace Semaphore.Infrastructure.Settings
         static string _dbConnectionString = "User ID=report;password=report;Data Source=CD_WORK";
         public static string DbConnectionString { get { return _dbConnectionString; } set { _dbConnectionString = value; } }
 
-        static string _pathToXls = @"..\..\xls\priority.xls";
+        //static string _pathToXls = @"..\..\xls\priority.xls";
+        static string _pathToXls = @"report.xls";
         public static string PathToXls { get { return _pathToXls; } set { _pathToXls = value; } }
 
         static string _pathToPriorityLog = @"..\\..\\log\\log_priority.txt";

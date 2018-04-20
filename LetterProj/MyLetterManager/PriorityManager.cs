@@ -47,6 +47,7 @@ namespace MyLetterManager
 
         static public void AddPinFromFile(List<Deal> insertList)
         {
+            SetCtlFile();
             try
             {
                 using (FileStream fs = new FileStream(@"Imp.csv", FileMode.Create))
@@ -64,6 +65,20 @@ namespace MyLetterManager
                 MessageBox.Show("Ошибка чтения файла, попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PriorityLoger.AddRecordToLog("Не удается прочитать файл. " + ex.Message);
             }            
+        }
+
+        private static void SetCtlFile()
+        {
+            string text = "LOAD DATA " + Environment.NewLine +
+                          "INFILE 'imp.csv' " + Environment.NewLine +
+                          "REPLACE " + Environment.NewLine +
+                          "INTO TABLE \"IMP_PRIOR\" " + Environment.NewLine +
+                          "FIELDS TERMINATED BY ';' " + Environment.NewLine +
+                          "TRAILING NULLCOLS " + Environment.NewLine +
+                          "( " + Environment.NewLine +
+                          "deal_id " + Environment.NewLine +
+                          ")";
+            File.WriteAllText("1_import.CTL", text);
         }
 
         private static void InsertToDbByBatFile()
@@ -120,7 +135,7 @@ namespace MyLetterManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка соединения с базой данных, попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка соединения с базой данных, попробуйте повторить попытку.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PriorityLoger.AddRecordToLog("Ошибка соединения с базой данных. " + ex.Message);
             }
             return count;
@@ -129,7 +144,34 @@ namespace MyLetterManager
         public static void UpdatePriority(string priorityValue)
         {
             InsertIntoReportPriority(priorityValue);
-            UpdateScheduledTodoItems(priorityValue);               
+            UpdateScheduledTodoItems(priorityValue);
+            AfterCheck(priorityValue);
+        }
+
+        private static void AfterCheck(string pv)
+        {
+            int toUp = 0;
+            int done = 0;
+            string query = "select count(*) from REPORT.IMP_PRIOR t";
+            OracleDataReader reader = _con.GetReader(query);
+            while (reader.Read())
+            {
+                toUp = Convert.ToInt32(reader[0]);
+            }
+            query = "select count(*) " +
+                      "from SUVD.SCHEDULED_TODO_ITEMS s, " +
+                           "SUVD.PROJECTS p " +
+                     "where s.project_id = p.id " +
+                       "and p.business_n in (select t.deal_id " +
+                                              "from report.IMP_PRIOR t) " +
+                       "and s.priority_value = " + pv;
+            reader = _con.GetReader(query);
+            while (reader.Read())
+            {
+                done = Convert.ToInt32(reader[0]);
+            }
+            reader.Close();
+            MessageBox.Show("Пинов в файле: " + toUp + ". Из них " + pv + " приоритет сейчас имеют " + done + (toUp == done? "." : (", " + (toUp - done) + " похоже не имеют назначенных задач для поднятия приоритета.")), "Приоритеты");
         }
 
         private static void UpdateScheduledTodoItems(string priorityValue)
@@ -180,7 +222,7 @@ namespace MyLetterManager
                                     "and c.id = p.debtor_contact_id " +
                                     "and d.id = p.dogovor_id " +
                                     "and s.project_id in (select p.id " +
-                                                           "from LET_APP t, suvd.projects p " +
+                                                           "from report.IMP_PRIOR t, suvd.projects p " +
                                                           "where p.business_n = t.deal_id) " +
                                     "and s.priority_value < " + priorityValue;
                 _con.ExecCommand(query);                
