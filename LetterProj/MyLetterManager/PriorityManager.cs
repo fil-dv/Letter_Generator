@@ -62,7 +62,7 @@ namespace MyLetterManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка чтения файла, попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка чтения файла, попробуйте повторить попытку.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PriorityLoger.AddRecordToLog("Не удается прочитать файл. " + ex.Message);
             }            
         }
@@ -94,7 +94,7 @@ namespace MyLetterManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка записи данных в базу, попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка записи данных в базу, попробуйте повторить попытку.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PriorityLoger.AddRecordToLog("Ошибка записи данных в базу. " + ex.Message);
             }            
         }
@@ -123,7 +123,7 @@ namespace MyLetterManager
                               "and c.id = p.debtor_contact_id " +
                               "and d.id = p.dogovor_id " +
                               "and s.project_id in (select p.id " +
-                                                     "from LET_APP t, suvd.projects p " +
+                                                     "from IMP_PRIOR t, suvd.projects p " +
                                                     "where p.business_n = t.deal_id) " +
                               "and s.priority_value < " + priorityValue;
                 OracleDataReader reader = _con.GetReader(query);
@@ -171,7 +171,7 @@ namespace MyLetterManager
                 done = Convert.ToInt32(reader[0]);
             }
             reader.Close();
-            MessageBox.Show("Пинов в файле: " + toUp + ". Из них " + pv + " приоритет сейчас имеют " + done + (toUp == done? "." : (", " + (toUp - done) + " похоже не имеют назначенных задач для поднятия приоритета.")), "Приоритеты");
+            MessageBox.Show("Пинов в файле: " + toUp + ". Из них " + pv + "-ый приоритет сейчас имеют " + done + (toUp == done? "." : (", " + (toUp - done) + " похоже не имеют назначенных задач для поднятия приоритета.")), "Приоритеты");
         }
 
         private static void UpdateScheduledTodoItems(string priorityValue)
@@ -194,7 +194,7 @@ namespace MyLetterManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Возникла ошибка при апдейте таблицы SCHEDULED_TODO_ITEMS, приоритет поднят не был, попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Возникла ошибка при апдейте таблицы SCHEDULED_TODO_ITEMS, приоритет поднят не был, попробуйте повторить попытку.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PriorityLoger.AddRecordToLog("Возникла ошибка при апдейте таблицы SCHEDULED_TODO_ITEMS, приоритет поднят не был. " + ex.Message);
             }
         }
@@ -229,7 +229,7 @@ namespace MyLetterManager
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Возникла ошибка при записи в таблицу report.priority,  попробуйте повторить попытку. Если совсем грусть, обращайтесь в IT отдел.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Возникла ошибка при записи в таблицу report.priority,  попробуйте повторить попытку.", "Приоритеты", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PriorityLoger.AddRecordToLog("Возникла ошибка при записи в таблицу report.priority. " + ex.Message);
             }
         }

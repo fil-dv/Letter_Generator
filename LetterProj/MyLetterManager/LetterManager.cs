@@ -389,7 +389,7 @@ namespace MyLetterManager
             return isExist;
         }
 
-         static public void AddPinFromFile(List<RecordToInsert> insertList)
+        static public void AddPinFromFile(List<RecordToInsert> insertList)
         {
             using (FileStream fs = new FileStream(@"Imp.csv", FileMode.Create))
             using (StreamWriter sw = new StreamWriter(fs))
