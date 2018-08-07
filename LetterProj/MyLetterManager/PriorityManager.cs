@@ -183,7 +183,7 @@ namespace MyLetterManager
                                " where s.project_id in (select p.id " +
                                  "from report.IMP_PRIOR t, suvd.projects p " +
                                 "where p.business_n = t.deal_id) " +
-                                  "and s.priority_value < " + priorityValue;
+                                (priorityValue == "0"? "" :  "and s.priority_value < " + priorityValue);
 
                 _con.ExecCommand(query);
 

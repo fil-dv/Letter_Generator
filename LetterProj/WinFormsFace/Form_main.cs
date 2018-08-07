@@ -570,8 +570,7 @@ namespace WinFormsFace
         private void priority_menuItem_Click(object sender, EventArgs e)
         {
             Priority_Form pf = new Priority_Form();
-            pf.ShowDialog();
-            
+            pf.ShowDialog();            
         }
 
         private void exitMenuItem_Click(object sender, EventArgs e)
