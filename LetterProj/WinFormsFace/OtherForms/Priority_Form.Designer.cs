@@ -37,13 +37,16 @@
             this.button_upd_prior = new System.Windows.Forms.Button();
             this.button_priority_report = new System.Windows.Forms.Button();
             this.statusStrip_prior = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStrip_0 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip_251 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip_255 = new System.Windows.Forms.ToolStripStatusLabel();
             this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip_prior.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,7 +54,7 @@
             // 
             this.comboBox_priority.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox_priority.FormattingEnabled = true;
-            this.comboBox_priority.Location = new System.Drawing.Point(146, 28);
+            this.comboBox_priority.Location = new System.Drawing.Point(210, 28);
             this.comboBox_priority.Name = "comboBox_priority";
             this.comboBox_priority.Size = new System.Drawing.Size(72, 21);
             this.comboBox_priority.TabIndex = 0;
@@ -72,7 +75,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.button_open_file_priority.Location = new System.Drawing.Point(67, 70);
             this.button_open_file_priority.Name = "button_open_file_priority";
-            this.button_open_file_priority.Size = new System.Drawing.Size(151, 23);
+            this.button_open_file_priority.Size = new System.Drawing.Size(215, 23);
             this.button_open_file_priority.TabIndex = 3;
             this.button_open_file_priority.Text = "Загрузить файл";
             this.button_open_file_priority.UseVisualStyleBackColor = true;
@@ -105,9 +108,9 @@
             this.button_upd_prior.Enabled = false;
             this.button_upd_prior.Location = new System.Drawing.Point(67, 239);
             this.button_upd_prior.Name = "button_upd_prior";
-            this.button_upd_prior.Size = new System.Drawing.Size(151, 23);
+            this.button_upd_prior.Size = new System.Drawing.Size(215, 23);
             this.button_upd_prior.TabIndex = 6;
-            this.button_upd_prior.Text = "Поднять приоритет";
+            this.button_upd_prior.Text = "Изменить приоритет";
             this.button_upd_prior.UseVisualStyleBackColor = true;
             this.button_upd_prior.Click += new System.EventHandler(this.button_upd_prior_Click);
             // 
@@ -117,7 +120,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.button_priority_report.Location = new System.Drawing.Point(34, 322);
             this.button_priority_report.Name = "button_priority_report";
-            this.button_priority_report.Size = new System.Drawing.Size(213, 23);
+            this.button_priority_report.Size = new System.Drawing.Size(277, 23);
             this.button_priority_report.TabIndex = 7;
             this.button_priority_report.Text = "Выгрузить отчет за указанный период";
             this.button_priority_report.UseVisualStyleBackColor = true;
@@ -126,22 +129,25 @@
             // statusStrip_prior
             // 
             this.statusStrip_prior.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel5,
             this.toolStripStatusLabel3,
+            this.toolStrip_0,
             this.toolStripStatusLabel1,
             this.toolStrip_251,
             this.toolStripStatusLabel2,
-            this.toolStrip_255});
+            this.toolStrip_255,
+            this.toolStripStatusLabel4});
             this.statusStrip_prior.Location = new System.Drawing.Point(0, 370);
             this.statusStrip_prior.Name = "statusStrip_prior";
-            this.statusStrip_prior.Size = new System.Drawing.Size(280, 22);
+            this.statusStrip_prior.Size = new System.Drawing.Size(344, 22);
             this.statusStrip_prior.TabIndex = 8;
             this.statusStrip_prior.Text = "statusStrip1";
             // 
-            // toolStripStatusLabel3
+            // toolStrip_0
             // 
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(55, 17);
-            this.toolStripStatusLabel3.Text = "Сегодня:";
+            this.toolStrip_0.Name = "toolStrip_0";
+            this.toolStrip_0.Size = new System.Drawing.Size(13, 17);
+            this.toolStrip_0.Text = "0";
             // 
             // toolStripStatusLabel1
             // 
@@ -172,7 +178,7 @@
             // dateTimePicker2
             // 
             this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dateTimePicker2.Location = new System.Drawing.Point(153, 296);
+            this.dateTimePicker2.Location = new System.Drawing.Point(217, 296);
             this.dateTimePicker2.Name = "dateTimePicker2";
             this.dateTimePicker2.Size = new System.Drawing.Size(94, 20);
             this.dateTimePicker2.TabIndex = 10;
@@ -185,11 +191,29 @@
             this.dateTimePicker1.Size = new System.Drawing.Size(94, 20);
             this.dateTimePicker1.TabIndex = 11;
             // 
+            // toolStripStatusLabel4
+            // 
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel4.Text = "toolStripStatusLabel4";
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(16, 17);
+            this.toolStripStatusLabel3.Text = "0:";
+            // 
+            // toolStripStatusLabel5
+            // 
+            this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
+            this.toolStripStatusLabel5.Size = new System.Drawing.Size(61, 17);
+            this.toolStripStatusLabel5.Text = "Сегодня:  ";
+            // 
             // Priority_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(280, 392);
+            this.ClientSize = new System.Drawing.Size(344, 392);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.dateTimePicker2);
             this.Controls.Add(this.statusStrip_prior);
@@ -201,7 +225,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox_priority);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "Priority_Form";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Приоритеты";
             this.statusStrip_prior.ResumeLayout(false);
@@ -225,8 +251,11 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStrip_251;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolStrip_255;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ToolStripStatusLabel toolStrip_0;
         private System.Windows.Forms.DateTimePicker dateTimePicker2;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
     }
 }

@@ -125,7 +125,7 @@ namespace MyLetterManager
                               "and s.project_id in (select p.id " +
                                                      "from IMP_PRIOR t, suvd.projects p " +
                                                     "where p.business_n = t.deal_id) " +
-                              "and s.priority_value < " + priorityValue;
+                              "and s.priority_value " + (priorityValue == "0"? ">" : "<") +  priorityValue;
                 OracleDataReader reader = _con.GetReader(query);
                 while (reader.Read())
                 {
@@ -171,7 +171,7 @@ namespace MyLetterManager
                 done = Convert.ToInt32(reader[0]);
             }
             reader.Close();
-            MessageBox.Show("Пинов в файле: " + toUp + ". Из них " + pv + "-ый приоритет сейчас имеют " + done + (toUp == done? "." : (", " + (toUp - done) + " похоже не имеют назначенных задач для поднятия приоритета.")), "Приоритеты");
+            MessageBox.Show("Пинов в файле: " + toUp + ". Из них приоритет \"" + pv + "\" сейчас имеют " + done + (toUp == done? "." : (", " + (toUp - done) + " похоже не имеют назначенных задач для поднятия приоритета.")), "Приоритеты");
         }
 
         private static void UpdateScheduledTodoItems(string priorityValue)
@@ -183,7 +183,7 @@ namespace MyLetterManager
                                " where s.project_id in (select p.id " +
                                  "from report.IMP_PRIOR t, suvd.projects p " +
                                 "where p.business_n = t.deal_id) " +
-                                (priorityValue == "0"? "" :  "and s.priority_value < " + priorityValue);
+                                "and s.priority_value " + (priorityValue == "0" ? ">" : "<") + priorityValue;
 
                 _con.ExecCommand(query);
 
@@ -224,7 +224,7 @@ namespace MyLetterManager
                                     "and s.project_id in (select p.id " +
                                                            "from report.IMP_PRIOR t, suvd.projects p " +
                                                           "where p.business_n = t.deal_id) " +
-                                    "and s.priority_value < " + priorityValue;
+                                    "and s.priority_value " + (priorityValue == "0" ? ">" : "<") + priorityValue;
                 _con.ExecCommand(query);                
             }
             catch (Exception ex)

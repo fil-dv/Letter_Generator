@@ -14,6 +14,7 @@ namespace WinFormsFace.OtherForms
         public Priority_Form()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
             InitControls();
             PriorityManager.CreateConnect();
             EventSubscription();
@@ -42,7 +43,9 @@ namespace WinFormsFace.OtherForms
 
         private void RefreshToolStrip()
         {
-            int count = PriorityManager.GetCountUpdatedPins("251");
+            int count = PriorityManager.GetCountUpdatedPins("0");
+            toolStrip_0.Text = count.ToString();
+            count = PriorityManager.GetCountUpdatedPins("251");
             toolStrip_251.Text = count.ToString();
             count = PriorityManager.GetCountUpdatedPins("255");
             toolStrip_255.Text = count.ToString();
@@ -90,7 +93,7 @@ namespace WinFormsFace.OtherForms
         {
             string priorValue = comboBox_priority.SelectedItem.ToString();
             int readyForUpdate = PriorityManager.CheckUpdatePriority(priorValue);
-            label_update.Text = "Приоритет будет поднят для: " + readyForUpdate.ToString();
+            label_update.Text = "Приоритет будет изменен для: " + readyForUpdate.ToString();
         }
 
         private void InitControls()

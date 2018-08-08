@@ -11,19 +11,21 @@ namespace Semaphore.Infrastructure.Settings
     {
         //static string _name;
         // public static string Name { get {return _name;} set { _name = value;}}
-       // static string _pathToSynchronizerFolder = @"s:\common\fil_dv\Semaphore\synchronizer";
+        // static string _pathToSynchronizerFolder = @"s:\common\fil_dv\Semaphore\synchronizer";
         //public static string PathToSynchronizerFolder { get { return _pathToSynchronizerFolder; } set { _pathToSynchronizerFolder = value; } }
 
 
         //static string _pathToSynchronizerFile = @"s:\common\fil_dv\Semaphore\synchronizer\1.txt";
-       // public static string PathToSynchronizerFile { get { return _pathToSynchronizerFile; } set { _pathToSynchronizerFile = value; } }
+        // public static string PathToSynchronizerFile { get { return _pathToSynchronizerFile; } set { _pathToSynchronizerFile = value; } }
 
         //static string _pathToData = @"..\\..\\settings\\data.txt";
         //public static string PathToData { get { return _pathToData; } set { _pathToData = value; } }
 
         //static string _dbConnectionString = "User ID=import_user;password=sT7hk9Lm;Data Source=CD_WORK";
+
+
         static string _dbConnectionString = "User ID=report;password=report;Data Source=CD_WORK";
-        public static string DbConnectionString { get { return _dbConnectionString; } set { _dbConnectionString = value; } }
+        public static string DbConnectionString { get { return _dbConnectionString; }}
 
         //static string _pathToXls = @"..\..\xls\priority.xls";
         static string _pathToXls = @"report.xls";
