@@ -171,7 +171,7 @@ namespace MyLetterManager
                 done = Convert.ToInt32(reader[0]);
             }
             reader.Close();
-            MessageBox.Show("Пинов в файле: " + toUp + ". Из них приоритет \"" + pv + "\" сейчас имеют " + done + (toUp == done? "." : (", " + (toUp - done) + " похоже не имеют назначенных задач для поднятия приоритета.")), "Приоритеты");
+            MessageBox.Show("Пинов в файле: " + toUp + ". Из них приоритет \"" + pv + "\" сейчас имеют " + done + (toUp == done? "." : (", " + (toUp - done) + " похоже не имеют назначенных задач для поднятия/снятия приоритета.")), "Приоритеты");
         }
 
         private static void UpdateScheduledTodoItems(string priorityValue)

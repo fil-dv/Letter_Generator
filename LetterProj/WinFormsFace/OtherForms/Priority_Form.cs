@@ -100,6 +100,7 @@ namespace WinFormsFace.OtherForms
         {
             comboBox_priority.Items.Add("0");
             comboBox_priority.Items.Add("251");
+            comboBox_priority.Items.Add("252");
             comboBox_priority.Items.Add("255");
             button_open_file_priority.Enabled = false;
         }

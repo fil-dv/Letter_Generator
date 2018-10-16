@@ -86,7 +86,7 @@
             this.label_update.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label_update.AutoSize = true;
-            this.label_update.Location = new System.Drawing.Point(49, 188);
+            this.label_update.Location = new System.Drawing.Point(86, 190);
             this.label_update.Name = "label_update";
             this.label_update.Size = new System.Drawing.Size(0, 13);
             this.label_update.TabIndex = 4;
@@ -96,7 +96,7 @@
             this.label_all.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label_all.AutoSize = true;
-            this.label_all.Location = new System.Drawing.Point(91, 123);
+            this.label_all.Location = new System.Drawing.Point(128, 125);
             this.label_all.Name = "label_all";
             this.label_all.Size = new System.Drawing.Size(0, 13);
             this.label_all.TabIndex = 5;
